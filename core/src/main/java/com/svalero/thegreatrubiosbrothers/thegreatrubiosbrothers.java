@@ -1,32 +1,33 @@
 package com.svalero.thegreatrubiosbrothers;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.svalero.thegreatrubiosbrothers.screen.MainMenuScreen;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class thegreatrubiosbrothers extends ApplicationAdapter {
-    private SpriteBatch batch;
-    private Texture image;
+/**
+ * Clase principal del juego. Hereda de Game para permitir el uso de múltiples pantallas (Screens).
+ */
+public class thegreatrubiosbrothers extends Game {
+
+
+    public SpriteBatch batch;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        image = new Texture("textures/libgdx.png");
+
+        this.setScreen(new MainMenuScreen(this));
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        batch.begin();
-        batch.draw(image, 140, 210);
-        batch.end();
+        super.render();
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        image.dispose();
+        if (batch != null) {
+            batch.dispose();
+        }
     }
 }
