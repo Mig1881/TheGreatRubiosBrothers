@@ -4,15 +4,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.svalero.thegreatrubiosbrothers.manager.CameraManager;
 import com.svalero.thegreatrubiosbrothers.thegreatrubiosbrothers;
 import com.svalero.thegreatrubiosbrothers.manager.LevelManager;
-import com.svalero.thegreatrubiosbrothers.util.Constans;
+import com.svalero.thegreatrubiosbrothers.manager.LogicManager;
+import com.svalero.thegreatrubiosbrothers.manager.RenderManager;
 
 public class GameScreen implements Screen {
 
     private final thegreatrubiosbrothers game;
-    private OrthographicCamera camera;
     private LevelManager levelManager;
+    private LogicManager logicManager;
+    private RenderManager renderManager;
+    private CameraManager cameraManager;
 
     public GameScreen(thegreatrubiosbrothers game) {
         this.game = game;
@@ -20,36 +24,42 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, Constans.SCREEN_WIDTH / 3f, Constans.SCREEN_HEIGHT / 3f);
-        camera.update();
-
         levelManager = new LevelManager();
+        logicManager = new LogicManager();
+        cameraManager = new CameraManager(logicManager);
+        renderManager = new RenderManager(logicManager, game.batch);
     }
 
     @Override
     public void render(float delta) {
+        logicManager.update(delta);
+
+        cameraManager.handleCamera();
+
         Gdx.gl.glClearColor(92/255f, 148/255f, 252/255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.update();
+        OrthographicCamera cam = cameraManager.getCamera();
 
-        levelManager.render(camera);
+        levelManager.render(cam);
+        renderManager.draw(cam);
     }
 
     @Override
     public void resize(int width, int height) {
-        camera.setToOrtho(false, width / 3f, height / 3f);
     }
 
     @Override
-    public void pause() {}
+    public void pause() {
+    }
 
     @Override
-    public void resume() {}
+    public void resume() {
+    }
 
     @Override
-    public void hide() {}
+    public void hide() {
+    }
 
     @Override
     public void dispose() {

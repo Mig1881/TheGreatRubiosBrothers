@@ -33,4 +33,20 @@ public abstract class Character {
         position.y += y;
         rect.setPosition(position);
     }
+
+    public float getX() {
+        return position.x;
+    }
+
+    public float getY() {
+        return position.y;
+    }
+
+    public float getWidth() {
+        return currentFrame.getRegionWidth();
+    }
+
+    public float getHeight() {
+        return currentFrame.getRegionHeight();
+    }
 }
