@@ -10,7 +10,7 @@ public class Constans {
     // Físicas del juego
     public static final float PLAYER_SPEED = 3f;
     public static final float GRAVITY = 20f;
-    public static final float JUMPING_SPEED = 12f;
+    public static final float JUMPING_SPEED = 7f;
 
     // Rutas base para los Assets
     public static final String SOUND_DIR = "sounds/";
@@ -19,4 +19,6 @@ public class Constans {
 
 
     public static final String TEXTURE_ATLAS = "davidBrother.atlas";
+    public static final int TILE_WIDTH = 16;
+    public static final int TILE_HEIGHT = 16;
 }

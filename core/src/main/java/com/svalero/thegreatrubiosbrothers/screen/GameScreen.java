@@ -26,7 +26,10 @@ public class GameScreen implements Screen {
     public void show() {
         levelManager = new LevelManager();
         logicManager = new LogicManager();
+        logicManager.setLevelManager(levelManager);
         cameraManager = new CameraManager(logicManager);
+        // Le pasamos la anchura del mapa a la cámara
+        cameraManager.setMapWidth(levelManager.getMapPixelWidth());
         renderManager = new RenderManager(logicManager, game.batch);
     }
 

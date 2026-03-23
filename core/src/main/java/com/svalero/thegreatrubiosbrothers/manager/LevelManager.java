@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.svalero.thegreatrubiosbrothers.util.Constans;
 
 public class LevelManager {
 
@@ -24,5 +25,17 @@ public class LevelManager {
     public void dispose() {
         map.dispose();
         mapRenderer.dispose();
+    }
+
+    public com.badlogic.gdx.maps.tiled.TiledMapTileLayer getCollisionLayer() {
+        return (com.badlogic.gdx.maps.tiled.TiledMapTileLayer) map.getLayers().get("terrain");
+    }
+
+    public float getMapPixelWidth() {
+        return getCollisionLayer().getWidth() * Constans.TILE_WIDTH;
+    }
+
+    public float getMapPixelHeight() {
+        return getCollisionLayer().getHeight() * Constans.TILE_HEIGHT;
     }
 }

@@ -7,6 +7,7 @@ public class CameraManager {
 
     private OrthographicCamera camera;
     private LogicManager logicManager; // Necesitamos saber dónde está el jugador
+    private float mapWidth;
 
     public CameraManager(LogicManager logicManager) {
         this.logicManager = logicManager;
@@ -20,26 +21,29 @@ public class CameraManager {
         camera.update();
     }
 
+    public void setMapWidth(float mapWidth) {
+        this.mapWidth = mapWidth;
+    }
+
     public void handleCamera() {
         // Obtengo la posición actual de David
         float playerX = logicManager.player.getX();
-        float playerY = logicManager.player.getY();
-
-        // Seguimiento en el eje X:
-        // Si el jugador está muy a la izquierda, no dejamos que la cámara muestre el vacío (fuera del mapa).
-        // Calculamos la mitad del ancho de visión de la cámara para saber dónde poner el tope izquierdo.
         float halfCameraWidth = camera.viewportWidth / 2f;
 
+        // Tope por la izquierda
         if (playerX < halfCameraWidth) {
-            camera.position.x = halfCameraWidth; // Tope a la izquierda
-        } else {
-            camera.position.x = playerX; // Sigue a David libremente
+            camera.position.x = halfCameraWidth;
+        }
+        // Tope por la derecha (si hemos configurado el mapWidth)
+        else if (mapWidth > 0 && playerX > (mapWidth - halfCameraWidth)) {
+            camera.position.x = mapWidth - halfCameraWidth;
+        }
+        // Movimiento libre
+        else {
+            camera.position.x = playerX;
         }
 
-        // Seguimiento en el eje Y:
-        // Mantendremos la cámara a una altura fija por ahora para que no maree saltando
         camera.position.y = camera.viewportHeight / 2f;
-
         camera.update();
     }
 
