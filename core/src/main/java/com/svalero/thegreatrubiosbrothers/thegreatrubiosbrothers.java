@@ -4,9 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.svalero.thegreatrubiosbrothers.screen.MainMenuScreen;
 
-/**
- * Clase principal del juego. Hereda de Game para permitir el uso de múltiples pantallas (Screens).
- */
 public class thegreatrubiosbrothers extends Game {
 
 
@@ -15,6 +12,11 @@ public class thegreatrubiosbrothers extends Game {
     @Override
     public void create() {
         batch = new SpriteBatch();
+
+        // Nota, ya cargare cuando haga la splash screeen los recursos
+        // de momento los cargo aqui en memoria, TODO cambiar esto mas adelante
+        com.svalero.thegreatrubiosbrothers.manager.R.loadAllResources();
+        com.svalero.thegreatrubiosbrothers.manager.R.assets.finishLoading();
 
         this.setScreen(new MainMenuScreen(this));
     }
