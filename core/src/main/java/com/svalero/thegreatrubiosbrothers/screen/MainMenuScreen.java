@@ -56,7 +56,7 @@ public class MainMenuScreen implements Screen {
         stage.draw();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            System.out.println("¡Ir a jugar!");
+            game.setScreen(new GameScreen(game));
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
