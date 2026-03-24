@@ -168,12 +168,22 @@
  </tile>
  <tile id="828">
   <properties>
-   <property name="fall" value=""/>
+   <property name="ground" value=""/>
   </properties>
  </tile>
  <tile id="829">
   <properties>
-   <property name="fall" value=""/>
+   <property name="ground" value=""/>
+  </properties>
+ </tile>
+ <tile id="831">
+  <properties>
+   <property name="ground" value=""/>
+  </properties>
+ </tile>
+ <tile id="832">
+  <properties>
+   <property name="ground" value=""/>
   </properties>
  </tile>
  <tile id="838">

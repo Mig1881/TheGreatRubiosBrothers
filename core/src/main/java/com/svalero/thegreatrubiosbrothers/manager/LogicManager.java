@@ -6,24 +6,45 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.svalero.thegreatrubiosbrothers.characters.Player;
 import com.svalero.thegreatrubiosbrothers.util.Constans;
+import com.svalero.thegreatrubiosbrothers.characters.enemies.Enemy;
+import java.util.List;
+import java.util.ArrayList;
 
 public class LogicManager {
 
     public Player player;
     private LevelManager levelManager; // Referencia al mapa
+    public List<Enemy> enemies;
 
     public LogicManager() {
         player = new Player(R.getRegion("Player1-right0"), new Vector2(50, 150));
+        enemies = new ArrayList<>();
     }
 
     public void setLevelManager(LevelManager levelManager) {
         this.levelManager = levelManager;
+        this.enemies = levelManager.loadEnemies();
     }
 
     public void update(float dt) {
-        handleInput();
-        applyPhysics(dt);
-        player.updateAnimation(dt);
+        // Si el jugador está muerto, NO leo el teclado ni comprobamos colisiones con el suelo
+        if (player.getCurrentState() != Player.State.DEAD) {
+            handleInput();
+        }
+
+        applyPhysics(dt); // La gravedad sigue aplicando para que el cadáver caiga
+
+        if (player.getCurrentState() != Player.State.DEAD) {
+            player.updateAnimation(dt);
+            checkPlayerEnemyCollisions(); // Compruebo los choques
+        }
+
+        for (Enemy enemy : enemies) {
+            enemy.update(dt);
+            if (!enemy.isSquashed()) { // Solo aplicamos físicas si está vivo
+                applyEnemyPhysics(enemy, dt);
+            }
+        }
     }
 
     private void handleInput() {
@@ -58,21 +79,26 @@ public class LogicManager {
         //Asumo que está en el aire (así si te caes por un barranco caminando, no puedes saltar en el aire)
         player.setOnGround(false);
 
-        //¿Colision con el suelo?
-        if (levelManager != null) {
-            checkVerticalCollisions();
+        //Si no esta muerto ¿Colision con el suelo?
+        if (player.getCurrentState() != Player.State.DEAD) {
+            if (levelManager != null) {
+                checkVerticalCollisions();
+            }
         }
 
         //Movimiento del jugador en el eje X (Izquierda/Derecha)
         player.move(player.velocity.x, 0);
-        if (levelManager != null) {
-            checkHorizontalCollisions();
+        //Si no esta muerto, compruebo si choca contra los muros
+        if (player.getCurrentState() != Player.State.DEAD) {
+            if (levelManager != null) {
+                checkHorizontalCollisions();
 
-            // Un pequeño extra de seguridad: no dejar que se salga por la izquierda del mapa
-            if (player.getX() < 0) {
-                player.getPosition().x = 0;
-                player.getRect().setX(0);
-                player.velocity.x = 0;
+                // Un pequeño extra de seguridad: no dejar que se salga por la izquierda del mapa
+                if (player.getX() < 0) {
+                    player.getPosition().x = 0;
+                    player.getRect().setX(0);
+                    player.velocity.x = 0;
+                }
             }
         }
     }
@@ -167,6 +193,103 @@ public class LogicManager {
                     } else if (cell.getTile().getProperties().containsKey("exit")) {
                         System.out.println("¡NIVEL COMPLETADO! Has tocado el exit.");
                     }
+                }
+            }
+        }
+    }
+
+    // --- FÍSICAS DE LOS ENEMIGOS ---
+
+    private void applyEnemyPhysics(Enemy enemy, float dt) {
+        //Gravedad y suelo
+        enemy.velocity.y -= Constans.GRAVITY * dt;
+        enemy.move(0, enemy.velocity.y);
+
+        if (levelManager != null) {
+            checkEnemyVerticalCollisions(enemy);
+        }
+
+        //Movimiento lateral (patrulla)
+        enemy.move(enemy.velocity.x, 0);
+
+        if (levelManager != null) {
+            checkEnemyHorizontalCollisions(enemy);
+        }
+    }
+
+    private void checkEnemyVerticalCollisions(Enemy enemy) {
+        TiledMapTileLayer layer = levelManager.getCollisionLayer();
+        int startX = (int) (enemy.getX() / Constans.TILE_WIDTH);
+        int endX = (int) ((enemy.getX() + enemy.getWidth() - 1) / Constans.TILE_WIDTH);
+
+        // Los enemigos solo caen, no saltan, solo comprruebo hacia abajo
+        if (enemy.velocity.y < 0) {
+            int bottomY = (int) (enemy.getY() / Constans.TILE_HEIGHT);
+
+            for (int x = startX; x <= endX; x++) {
+                TiledMapTileLayer.Cell cell = layer.getCell(x, bottomY);
+                if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
+                    enemy.getPosition().y = (bottomY + 1) * Constans.TILE_HEIGHT;
+                    enemy.getRect().setY(enemy.getPosition().y);
+                    enemy.velocity.y = 0; // Toca el suelo y deja de caer
+                    break;
+                }
+            }
+        }
+    }
+
+    private void checkEnemyHorizontalCollisions(Enemy enemy) {
+        TiledMapTileLayer layer = levelManager.getCollisionLayer();
+        int startY = (int) (enemy.getY() / Constans.TILE_HEIGHT);
+        int endY = (int) ((enemy.getY() + enemy.getHeight() - 1) / Constans.TILE_HEIGHT);
+
+        if (enemy.velocity.x > 0) { // Caminando hacia la derecha
+            int rightX = (int) ((enemy.getX() + enemy.getWidth() - 1) / Constans.TILE_WIDTH);
+            for (int y = startY; y <= endY; y++) {
+                TiledMapTileLayer.Cell cell = layer.getCell(rightX, y);
+                if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
+                    enemy.getPosition().x = rightX * Constans.TILE_WIDTH - enemy.getWidth();
+                    enemy.getRect().setX(enemy.getPosition().x);
+
+                    // ¡MEDIA VUELTA! Invertimos la velocidad para que camine a la izquierda
+                    enemy.velocity.x = -enemy.velocity.x;
+                    break;
+                }
+            }
+        } else if (enemy.velocity.x < 0) { // Caminando hacia la izquierda
+            int leftX = (int) (enemy.getX() / Constans.TILE_WIDTH);
+            for (int y = startY; y <= endY; y++) {
+                TiledMapTileLayer.Cell cell = layer.getCell(leftX, y);
+                if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
+                    enemy.getPosition().x = (leftX + 1) * Constans.TILE_WIDTH;
+                    enemy.getRect().setX(enemy.getPosition().x);
+
+                    // Se da la media vuelta, se invierte la velocidad para que camine a la derecha
+                    enemy.velocity.x = -enemy.velocity.x;
+                    break;
+                }
+            }
+        }
+    }
+
+    private void checkPlayerEnemyCollisions() {
+        if (player.getCurrentState() == Player.State.DEAD) return; // Los fantasmas no chocan
+
+        for (Enemy enemy : enemies) {
+            if (enemy.isSquashed()) continue; // No interactua con cadáveres
+
+            // Si los dos rectángulos se cruzan... ¡Contacto!
+            if (player.getRect().overlaps(enemy.getRect())) {
+
+                // Si el jugador está cayendo Y su borde inferior está más alto que el centro del enemigo
+                if (player.velocity.y < 0 && player.getY() > enemy.getY() + enemy.getHeight() / 2f) {
+                    //Lo pisa
+                    enemy.squash();
+                    // Pequeño rebote para el jugador
+                    player.velocity.y = Constans.JUMPING_SPEED * 0.8f;
+                } else {
+                    //Me pilla
+                    player.die();
                 }
             }
         }

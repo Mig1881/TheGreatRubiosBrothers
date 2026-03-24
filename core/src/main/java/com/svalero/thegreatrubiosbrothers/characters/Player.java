@@ -12,8 +12,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class Player extends Character {
 
-    // --- NUESTRA MÁQUINA DE ESTADOS ---
-    public enum State { IDLE, WALKING, JUMPING }
+    public enum State { IDLE, WALKING, JUMPING, DEAD }
     private State currentState;
     private State previousState;
 
@@ -73,6 +72,7 @@ public class Player extends Character {
 
     // Este método lo llamare desde el LogicManager en cada frame
     public void updateAnimation(float dt) {
+        if (currentState == State.DEAD) return;
         //que está haciendo el jugador ahora mismo
         currentState = getState();
 
@@ -135,5 +135,19 @@ public class Player extends Character {
 
     public boolean isDead() {
         return lives <= 0;
+    }
+    public void die() {
+        if (currentState == State.DEAD) return; // Si ya está muerto, no lo vuelvo a matar
+
+        currentState = State.DEAD;
+        lives--;
+
+        //El salto de la muerte, Anulo movimiento lateral y le damos un empujón hacia arriba
+        velocity.x = 0;
+        velocity.y = 12f; // Un salto alto para salir de la pantalla
+
+        // Ponemos el frame de muerte
+        this.currentFrame = R.getRegion("Player1-down");
+        com.badlogic.gdx.Gdx.audio.newSound(com.badlogic.gdx.Gdx.files.internal("sounds/uuh.wav")).play();
     }
 }
