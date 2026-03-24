@@ -15,10 +15,14 @@ public class LogicManager {
     public Player player;
     private LevelManager levelManager; // Referencia al mapa
     public List<Enemy> enemies;
+    private float timeLeft;
+    private float deathTimer = 0;
+    private boolean gameOver = false;
 
     public LogicManager() {
         player = new Player(R.getRegion("Player1-right0"), new Vector2(50, 150));
         enemies = new ArrayList<>();
+        this.timeLeft = 100f;
     }
 
     public void setLevelManager(LevelManager levelManager) {
@@ -26,10 +30,39 @@ public class LogicManager {
         this.enemies = levelManager.loadEnemies();
     }
 
+    public float getTimeLeft() {
+        return timeLeft;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
     public void update(float dt) {
-        // Si el jugador está muerto, NO leo el teclado ni comprobamos colisiones con el suelo
-        if (player.getCurrentState() != Player.State.DEAD) {
-            handleInput();
+        // Logica de muerte y tiempo
+        if (player.getCurrentState() == Player.State.DEAD) {
+            deathTimer += dt;
+            // Esperamos 3 segundos para que caiga por el barranco y suene el "uuh"
+            if (deathTimer > 3.0f) {
+                if (player.getLives() > 0) {
+                    respawn(); // Quedan vidas -> Volvemos a empezar
+                } else {
+                    gameOver = true; // 0 vidas -> Se acabó el juego
+                }
+            }
+        } else {
+            handleInput(); // Si está vivo, leemos el teclado
+
+            // Y restamos el tiempo
+            timeLeft -= dt;
+            if (timeLeft < 0) {
+                timeLeft = 0;
+                player.die(); // ¡muere si se acaba el tiempo!
+            }
+            // Si la coordenada Y del jugador baja de 0 (es decir, se sale por debajo de la pantalla)
+            if (player.getY() < -10) {
+                player.die();
+            }
         }
 
         applyPhysics(dt); // La gravedad sigue aplicando para que el cadáver caiga
@@ -172,7 +205,7 @@ public class LogicManager {
                     } else if (cell.getTile().getProperties().containsKey("exit")) {
                         // Final¡¡
                         System.out.println("¡NIVEL COMPLETADO! Has tocado el exit.");
-                        // TODO: Más adelante aquí cambiaremos a la pantalla de victoria o al nivel 2
+
                     }
                 }
             }
@@ -324,6 +357,23 @@ public class LogicManager {
                     layer.setCell(x, y, null);
                 }
             }
+        }
+    }
+
+    private void respawn() {
+        // Restauro al player
+        player.setCurrentState(Player.State.IDLE);
+        player.velocity.set(0, 0);
+        player.getPosition().set(50, 150); // ⚠️ Pon aquí tus coordenadas de inicio
+        player.getRect().setPosition(50, 150);
+
+        // Restauro el tiempo y el contador de muerte
+        timeLeft = 100f;
+        deathTimer = 0;
+
+        // Recargoa los enemigos para que vuelvan a sus posiciones originales
+        if (levelManager != null) {
+            this.enemies = levelManager.loadEnemies();
         }
     }
 

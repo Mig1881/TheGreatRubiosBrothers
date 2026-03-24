@@ -35,6 +35,11 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (logicManager.isGameOver()) {
+            game.setScreen(new MainMenuScreen(game));
+            dispose();
+            return;
+        }
         logicManager.update(delta);
 
         cameraManager.handleCamera();
@@ -67,5 +72,6 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         levelManager.dispose();
+        renderManager.dispose();
     }
 }
