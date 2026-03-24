@@ -13,7 +13,7 @@ public class LogicManager {
     private LevelManager levelManager; // Referencia al mapa
 
     public LogicManager() {
-        player = new Player(R.getRegion("david_idle_left"), new Vector2(50, 150));
+        player = new Player(R.getRegion("Player1-right0"), new Vector2(50, 150));
     }
 
     public void setLevelManager(LevelManager levelManager) {
@@ -23,6 +23,7 @@ public class LogicManager {
     public void update(float dt) {
         handleInput();
         applyPhysics(dt);
+        player.updateAnimation(dt);
     }
 
     private void handleInput() {
@@ -31,10 +32,12 @@ public class LogicManager {
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             player.velocity.x = Constans.PLAYER_SPEED;
+            player.setRunningRight(true); // Gira a la derecha
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             player.velocity.x = -Constans.PLAYER_SPEED;
             //se mueve a tres pixeles en el eje x en cada tick de la logica, a 60 frames por segundo son 180 pixeles por segundo
+            player.setRunningRight(false); // Gira a la izquierda
         }
 
         // Salto básico, solo se salta si esta en el suelo.

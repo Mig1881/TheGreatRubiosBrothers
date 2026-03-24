@@ -18,7 +18,7 @@ public class Constans {
     public static final String TEXTURES_DIR = "textures/";
 
 
-    public static final String TEXTURE_ATLAS = "davidBrother.atlas";
+    public static final String TEXTURE_ATLAS = "rubiosBrothers.atlas";
     public static final int TILE_WIDTH = 16;
     public static final int TILE_HEIGHT = 16;
 }
