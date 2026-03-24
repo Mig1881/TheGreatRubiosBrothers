@@ -37,6 +37,7 @@ public class LogicManager {
         if (player.getCurrentState() != Player.State.DEAD) {
             player.updateAnimation(dt);
             checkPlayerEnemyCollisions(); // Compruebo los choques
+            checkCollectibles();//Compruebo si nos estamos comiendo un diammante
         }
 
         for (Enemy enemy : enemies) {
@@ -290,6 +291,37 @@ public class LogicManager {
                 } else {
                     //Me pilla
                     player.die();
+                }
+            }
+        }
+    }
+
+    private void checkCollectibles() {
+        if (player.getCurrentState() == Player.State.DEAD) return;
+
+        TiledMapTileLayer layer = levelManager.getCollisionLayer();
+
+        // Calculo la caja que ocupa el jugador
+        int startX = (int) (player.getX() / Constans.TILE_WIDTH);
+        int endX = (int) ((player.getX() + player.getWidth() - 1) / Constans.TILE_WIDTH);
+        int startY = (int) (player.getY() / Constans.TILE_HEIGHT);
+        int endY = (int) ((player.getY() + player.getHeight() - 1) / Constans.TILE_HEIGHT);
+
+        // Reviso todas las celdas que el jugador está tocando con su cuerpo
+        for (int x = startX; x <= endX; x++) {
+            for (int y = startY; y <= endY; y++) {
+                TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+
+                // Si la celda existe y tiene "diamond"...
+                if (cell != null && cell.getTile() != null && cell.getTile().getProperties().containsKey("diamond")) {
+
+                    // Sumo el punto a Player
+                    player.setScore(player.getScore() + 1);
+                    System.out.println("¡Diamante recogido! Puntuación total: " + player.getScore());
+                    //Sonido
+                    com.badlogic.gdx.Gdx.audio.newSound(com.badlogic.gdx.Gdx.files.internal("sounds/score_simple.wav")).play();
+                    //Borramos el diamante del mapa dejándolo nulo
+                    layer.setCell(x, y, null);
                 }
             }
         }
