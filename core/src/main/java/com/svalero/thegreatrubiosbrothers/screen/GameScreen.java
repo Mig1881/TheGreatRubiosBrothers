@@ -43,6 +43,24 @@ public class GameScreen implements Screen {
             dispose();
             return;
         }
+        if (logicManager.isLevelCompleted()) {
+            // ¿en qué nivel estamos?
+            int currentLevel = com.svalero.thegreatrubiosbrothers.manager.ConfigurationManager.getStartLevel();
+
+            if (currentLevel == 1) {
+                // Si estamos en el 1, cambiamos la config al 2 y recargamos la pantalla de juego
+                com.svalero.thegreatrubiosbrothers.manager.ConfigurationManager.setStartLevel(2);
+                game.setScreen(new GameScreen(game));
+            } else {
+                // Si nos pasamos el 2 (o el último que haya), reseteamos al nivel 1 para la próxima...
+                com.svalero.thegreatrubiosbrothers.manager.ConfigurationManager.setStartLevel(1);
+                // ... y mandamos al jugador al menú principal como campeón.
+                game.setScreen(new MainMenuScreen(game));
+            }
+
+            dispose();
+            return;
+        }
         logicManager.update(delta);
 
         cameraManager.handleCamera();

@@ -13,11 +13,12 @@ import java.util.ArrayList;
 public class LogicManager {
 
     public Player player;
-    private LevelManager levelManager; // Referencia al mapa
+    private LevelManager levelManager;
     public List<Enemy> enemies;
     private float timeLeft;
     private float deathTimer = 0;
     private boolean gameOver = false;
+    private boolean levelCompleted = false;
 
     public LogicManager() {
         player = new Player(R.getRegion("Player1-right0"), new Vector2(50, 150));
@@ -36,6 +37,10 @@ public class LogicManager {
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public boolean isLevelCompleted() {
+        return levelCompleted;
     }
 
     public void update(float dt) {
@@ -205,6 +210,7 @@ public class LogicManager {
                     } else if (cell.getTile().getProperties().containsKey("exit")) {
                         // Final¡¡
                         System.out.println("¡NIVEL COMPLETADO! Has tocado el exit.");
+                        levelCompleted = true;
 
                     }
                 }
@@ -226,6 +232,7 @@ public class LogicManager {
                         break;
                     } else if (cell.getTile().getProperties().containsKey("exit")) {
                         System.out.println("¡NIVEL COMPLETADO! Has tocado el exit.");
+                        levelCompleted = true;
                     }
                 }
             }
@@ -235,8 +242,11 @@ public class LogicManager {
     // --- FÍSICAS DE LOS ENEMIGOS ---
 
     private void applyEnemyPhysics(Enemy enemy, float dt) {
-        //Gravedad y suelo
-        enemy.velocity.y -= Constans.GRAVITY * dt;
+        // Solo aplicamos la gravedad si el enemigo NO está volando (La abeja no se cae)
+        if (!enemy.isFlying()) {
+            enemy.velocity.y -= Constans.GRAVITY * dt;
+        }
+
         enemy.move(0, enemy.velocity.y);
 
         if (levelManager != null) {
@@ -247,7 +257,9 @@ public class LogicManager {
         enemy.move(enemy.velocity.x, 0);
 
         if (levelManager != null) {
-            checkEnemyHorizontalCollisions(enemy);
+            if (!enemy.isFlying()) {
+                checkEnemyHorizontalCollisions(enemy);
+            }
         }
     }
 
@@ -319,6 +331,15 @@ public class LogicManager {
                 if (player.velocity.y < 0 && player.getY() > enemy.getY() + enemy.getHeight() / 2f) {
                     //Lo pisa
                     enemy.squash();
+
+                    player.setScore(player.getScore() + 1); // Suma 1 punto (10 en el HUD)
+
+                    // Reproducimos el sonido usando el AssetManager de tu clase R
+                    com.badlogic.gdx.audio.Sound bonusSound = R.assets.get("sounds/bonus_score.wav", com.badlogic.gdx.audio.Sound.class);
+                    if (bonusSound != null) {
+                        bonusSound.play();
+                    }
+
                     // Pequeño rebote para el jugador
                     player.velocity.y = Constans.JUMPING_SPEED * 0.8f;
                 } else {
