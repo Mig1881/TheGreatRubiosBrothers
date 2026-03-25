@@ -1,14 +1,12 @@
 package com.svalero.thegreatrubiosbrothers.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.svalero.thegreatrubiosbrothers.manager.CameraManager;
+import com.svalero.thegreatrubiosbrothers.manager.*;
 import com.svalero.thegreatrubiosbrothers.thegreatrubiosbrothers;
-import com.svalero.thegreatrubiosbrothers.manager.LevelManager;
-import com.svalero.thegreatrubiosbrothers.manager.LogicManager;
-import com.svalero.thegreatrubiosbrothers.manager.RenderManager;
 
 public class GameScreen implements Screen {
 
@@ -20,21 +18,26 @@ public class GameScreen implements Screen {
 
     public GameScreen(thegreatrubiosbrothers game) {
         this.game = game;
-    }
-
-    @Override
-    public void show() {
         levelManager = new LevelManager();
         logicManager = new LogicManager();
         logicManager.setLevelManager(levelManager);
         cameraManager = new CameraManager(logicManager);
-        // Le pasamos la anchura del mapa a la cámara
         cameraManager.setMapWidth(levelManager.getMapPixelWidth());
         renderManager = new RenderManager(logicManager, game.batch);
     }
 
     @Override
+    public void show() {
+        ConfigurationManager.playMusic("sounds/04_In-Game 1.mp3");
+    }
+
+    @Override
     public void render(float delta) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            // Le pasamos 'this' para que sepa que hay una partida activa
+            game.setScreen(new MainMenuScreen(game, this));
+            return;
+        }
         if (logicManager.isGameOver()) {
             game.setScreen(new MainMenuScreen(game));
             dispose();
