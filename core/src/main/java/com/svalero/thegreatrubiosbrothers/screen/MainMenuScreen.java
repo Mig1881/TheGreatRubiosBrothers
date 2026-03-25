@@ -2,13 +2,17 @@ package com.svalero.thegreatrubiosbrothers.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -18,39 +22,42 @@ import com.svalero.thegreatrubiosbrothers.manager.ConfigurationManager;
 public class MainMenuScreen implements Screen {
 
     private final thegreatrubiosbrothers game;
-    private final GameScreen pausedGameScreen; // Guardará la partida si estamos en pausa
+    private final GameScreen pausedGameScreen;
 
     private Stage stage;
     private BitmapFont font;
     private Table mainTable;
     private Table instructionsTable;
 
-    //Constructor normal para el menu incial del juego
+    private Texture backgroundTexture;
+
     public MainMenuScreen(final thegreatrubiosbrothers game) {
         this.game = game;
-        this.pausedGameScreen = null; // No hay partida pausada
+        this.pausedGameScreen = null;
     }
 
-    //Constructor en Pausa (pulsar ESC en la partida)
     public MainMenuScreen(final thegreatrubiosbrothers game, GameScreen pausedScreen) {
         this.game = game;
-        this.pausedGameScreen = pausedScreen; // Se gurada la partida actual
+        this.pausedGameScreen = pausedScreen;
     }
 
     @Override
     public void show() {
-        // Solo se inicia la música del menú si NO estamos en pausa
         if (pausedGameScreen == null) {
             ConfigurationManager.init();
             ConfigurationManager.playMusic("sounds/02_Title Screen.mp3");
         }
 
+        //Cargo la imagen de fondo
+        backgroundTexture = new Texture(Gdx.files.internal("ui/menu_background.png"));
+
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
         font = new BitmapFont(Gdx.files.internal("ui/default.fnt"));
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
+        font.getData().setScale(2.0f);
+
+        // Estilos para los textos
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
 
@@ -61,93 +68,100 @@ public class MainMenuScreen implements Screen {
         instructionsTable.setFillParent(true);
         instructionsTable.setVisible(false);
 
-
-        // Título dinámico
+        // TÍTULO DINÁMICO
         String titleText;
         if (pausedGameScreen == null) {
-            titleText = "MAIN MENU";
+            titleText = "THE GREAT\nRUBIOS BROTHERS"; // 🎨 MEJORA VISUAL: Título más épico
         } else {
             titleText = "PAUSED";
         }
 
         Label titleLabel = new Label(titleText, labelStyle);
-        mainTable.add(titleLabel).padBottom(40).row();
+        titleLabel.setColor(new Color(1f, 0.4f, 0f, 1f));
+        titleLabel.setAlignment(Align.center);
+        titleLabel.setFontScale(3f);
 
-        // Botón de Instrucciones (Común para ambos modos)
-        TextButton instructionsButton = new TextButton("INSTRUCTIONS", buttonStyle);
-        instructionsButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                mainTable.setVisible(false);
-                instructionsTable.setVisible(true);
-            }
-        });
+        mainTable.add(titleLabel).padBottom(80).row();
+
+        Table buttonTable = new Table();
 
         if (pausedGameScreen == null) {
-            // --- BOTONES MODO MENÚ PRINCIPAL ---
-            TextButton playButton = new TextButton("PLAY", buttonStyle);
-            TextButton configButton = new TextButton("CONFIGURATION", buttonStyle);
-            TextButton exitButton = new TextButton("EXIT", buttonStyle);
+            TextButton playButton = createPrettyButton("PLAY");
+            TextButton instructionsButton = createPrettyButton("INSTRUCTIONS");
+            TextButton configButton = createPrettyButton("CONFIGURATION");
+            TextButton exitButton = createPrettyButton("EXIT");
 
-            playButton.addListener(new ClickListener() {
+            playButton.addListener(new ChangeListener() {
                 @Override
-                public void clicked(InputEvent event, float x, float y) {
+                public void changed(ChangeEvent event, Actor actor) {
                     game.setScreen(new GameScreen(game));
                     dispose();
                 }
             });
-
-            configButton.addListener(new ClickListener() {
+            instructionsButton.addListener(new ChangeListener() {
                 @Override
-                public void clicked(InputEvent event, float x, float y) {
+                public void changed(ChangeEvent event, Actor actor) {
+                    mainTable.setVisible(false);
+                    instructionsTable.setVisible(true);
+                }
+            });
+            configButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
                     game.setScreen(new ConfigurationScreen(game));
                     dispose();
                 }
             });
-
-            exitButton.addListener(new ClickListener() {
+            exitButton.addListener(new ChangeListener() {
                 @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    Gdx.app.exit();
-                }
+                public void changed(ChangeEvent event, Actor actor) { Gdx.app.exit(); }
             });
 
-            mainTable.add(playButton).pad(15).row();
-            mainTable.add(instructionsButton).pad(15).row();
-            mainTable.add(configButton).pad(15).row();
-            mainTable.add(exitButton).pad(15).row();
+            buttonTable.add(playButton).pad(20).fillX().row();
+            buttonTable.add(instructionsButton).pad(20).fillX().row();
+            buttonTable.add(configButton).pad(20).fillX().row();
+            buttonTable.add(exitButton).pad(20).fillX().row();
 
         } else {
-            // --- BOTONES MODO PAUSA ---
-            // Fíjate que aquí NO añadimos el botón 'configButton'
-            TextButton resumeButton = new TextButton("RESUME", buttonStyle);
-            TextButton quitButton = new TextButton("QUIT TO MENU", buttonStyle);
+            //BOTONES MODO PAUSA
+            TextButton resumeButton = createPrettyButton("RESUME GAME");
+            TextButton instructionsButton = createPrettyButton("INSTRUCTIONS");
+            TextButton quitButton = createPrettyButton("QUIT TO MENU");
 
-            resumeButton.addListener(new ClickListener() {
+            resumeButton.addListener(new ChangeListener() {
                 @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    game.setScreen(pausedGameScreen); // Volvemos a la partida
+                public void changed(ChangeEvent event, Actor actor) {
+                    game.setScreen(pausedGameScreen);
+                    dispose();
+                }
+            });
+            instructionsButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    mainTable.setVisible(false);
+                    instructionsTable.setVisible(true);
+                }
+            });
+            quitButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    pausedGameScreen.dispose();
+                    game.setScreen(new MainMenuScreen(game));
                     dispose();
                 }
             });
 
-            quitButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    pausedGameScreen.dispose(); // Destruimos la partida abandonada
-                    game.setScreen(new MainMenuScreen(game)); // Cargamos el menú limpio
-                    dispose();
-                }
-            });
-
-            mainTable.add(resumeButton).pad(15).row();
-            mainTable.add(instructionsButton).pad(15).row();
-            mainTable.add(quitButton).pad(15).row();
+            buttonTable.add(resumeButton).pad(20).fillX().row();
+            buttonTable.add(instructionsButton).pad(20).fillX().row();
+            buttonTable.add(quitButton).pad(20).fillX().row();
         }
 
-        // =========================================
+        // Añadimos la tabla de botones a la principal
+        mainTable.add(buttonTable);
+
+
         // TABLA DE INSTRUCCIONES
-        // =========================================
+
         String text = "CONTROLS\n\n" +
             "LEFT / RIGHT ARROWS : Move\n" +
             "SPACE : Jump\n\n" +
@@ -156,27 +170,63 @@ public class MainMenuScreen implements Screen {
 
         Label instrLabel = new Label(text, labelStyle);
         instrLabel.setAlignment(Align.center);
+        // Texto de instrucciones de color amarillo claro
+        instrLabel.setColor(Color.LIGHT_GRAY);
 
-        TextButton backButton = new TextButton("BACK", buttonStyle);
-        backButton.addListener(new ClickListener() {
+        TextButton backButton = createPrettyButton("BACK");
+        backButton.addListener(new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
+            public void changed(ChangeEvent event, Actor actor) {
                 instructionsTable.setVisible(false);
                 mainTable.setVisible(true);
             }
         });
 
-        instructionsTable.add(instrLabel).padBottom(40).row();
-        instructionsTable.add(backButton).pad(15).row();
+        instructionsTable.add(instrLabel).padBottom(60).row();
+        instructionsTable.add(backButton).pad(20).row();
 
         stage.addActor(mainTable);
         stage.addActor(instructionsTable);
     }
 
+    private TextButton createPrettyButton(String text) {
+        // Estilo base (letra blanca)
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = font;
+        style.fontColor = Color.WHITE;
+        // style.overFontColor = Color.YELLOW; // ⚠️ Esto no funciona bien sin Skin, lo hacemos a mano
+
+        final TextButton button = new TextButton(text, style);
+
+        // Añadimos el efecto Hover: cambia a Amarillo al entrar, vuelve a Blanco al salir
+        button.addListener(new ClickListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                button.getLabel().setColor(Color.YELLOW);
+                // Opcional: Sonido de 'tic' al pasar el ratón
+                // Gdx.audio.newSound(Gdx.files.internal("sounds/tic.wav")).play();
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                button.getLabel().setColor(Color.WHITE);
+            }
+        });
+
+        return button;
+    }
+
     @Override
     public void render(float delta) {
+        // 🎨 MEJORA VISUAL 4: Dibujamos la imagen de fondo ANTES que el escenario
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        game.batch.begin();
+        // Dibujamos el fondo estirado a toda la pantalla
+        game.batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        game.batch.end();
+
         stage.act(delta);
         stage.draw();
     }
@@ -197,5 +247,6 @@ public class MainMenuScreen implements Screen {
     public void dispose() {
         stage.dispose();
         font.dispose();
+        if (backgroundTexture != null) backgroundTexture.dispose();
     }
 }
