@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.svalero.thegreatrubiosbrothers.characters.enemies.Enemy2;
+import com.svalero.thegreatrubiosbrothers.characters.enemies.Enemy3;
 import com.svalero.thegreatrubiosbrothers.util.Constans;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -62,11 +64,13 @@ public class LevelManager {
                 float x = object.getProperties().get("x", Float.class);
                 float y = object.getProperties().get("y", Float.class);
 
-                // ¡LA MAGIA DEL POLIMORFISMO!
                 if (type.equals("enemy1")) {
                     enemyList.add(new Enemy1(new Vector2(x, y)));
+                } else if (type.equals("enemy2")) {
+                    enemyList.add(new Enemy2(new Vector2(x, y)));
+                } else if (type.equals("enemy3")) {
+                    enemyList.add(new Enemy3(new Vector2(x, y)));
                 }
-                // En el futuro harás: else if (type.equals("enemy2")) { enemyList.add(new Enemy2(...)); }
             }
         }
         return enemyList;

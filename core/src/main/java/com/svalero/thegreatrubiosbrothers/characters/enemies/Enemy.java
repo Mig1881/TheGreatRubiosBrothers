@@ -26,6 +26,10 @@ public abstract class Enemy extends Character {
     public boolean isSquashed() {
         return squashed;
     }
+    // Por defecto, los enemigos NO vuelan (es decir, les afecta la gravedad)
+    public boolean isFlying() {
+        return false;
+    }
 
     public abstract void squash();
 

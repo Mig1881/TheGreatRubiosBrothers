@@ -48,7 +48,8 @@ public class RenderManager {
 
         String scoreText = "RUBIOS\n" + String.format("%06d", logicManager.player.getScore() * 10);
         String livesText = "LIVES\n" + logicManager.player.getLives();
-        String stageText = "STAGE\n1-1";
+        int currentLevel = ConfigurationManager.getStartLevel();
+        String stageText = "STAGE\n1-" + currentLevel;
         String timeText = "TIME\n" + String.format("%03d", (int) Math.max(0, logicManager.getTimeLeft()));
 
         // Altura a la que vamos a pintar los textos (casi arriba del todo)
