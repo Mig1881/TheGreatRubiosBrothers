@@ -17,9 +17,12 @@ public class LevelManager {
 
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
-
+    //Lo dejo preparado para que pueda cargar dinamicamente cualquier mapa que se eliga
+    //de momento he hecho una copia del level1 y lo he renombrado a level2 para que no casque
     public LevelManager() {
-        map = new TmxMapLoader().load("levels/level1.tmx");
+        int selectedLevel = ConfigurationManager.getStartLevel();
+        String mapPath = "levels/level" + selectedLevel + ".tmx";
+        map = new TmxMapLoader().load(mapPath);
         mapRenderer = new OrthogonalTiledMapRenderer(map);
     }
 
