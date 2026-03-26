@@ -32,6 +32,7 @@ public class R {
         assets.load(Constans.MUSIC_DIR + "01_Intro.mp3", Music.class);
         assets.load(Constans.MUSIC_DIR + "02_Title Screen.mp3", Music.class);
         assets.load(Constans.MUSIC_DIR + "04_In-Game 1.mp3", Music.class);
+        assets.load(Constans.MUSIC_DIR + "06_High Scores.mp3", Music.class);
     }
 
 
