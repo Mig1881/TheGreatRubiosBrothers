@@ -39,7 +39,10 @@ public class GameScreen implements Screen {
             return;
         }
         if (logicManager.isGameOver()) {
-            game.setScreen(new MainMenuScreen(game));
+            // Cogo los puntos internos y los multiplicamos por 10
+            int finalScore = logicManager.player.getScore() * 10;
+            // Mando a la pantalla de Game Over y le paso los puntos
+            game.setScreen(new GameOverScreen(game, finalScore));
             dispose();
             return;
         }
