@@ -19,6 +19,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.svalero.thegreatrubiosbrothers.thegreatrubiosbrothers;
 import com.svalero.thegreatrubiosbrothers.manager.ConfigurationManager;
 
+// --- NUEVO --- Imports para el guardado/carga de partidas
+import com.svalero.thegreatrubiosbrothers.manager.SaveManager;
+import com.svalero.thegreatrubiosbrothers.model.SaveState;
+
 public class MainMenuScreen implements Screen {
 
     private final thegreatrubiosbrothers game;
@@ -87,6 +91,28 @@ public class MainMenuScreen implements Screen {
 
         if (pausedGameScreen == null) {
             TextButton playButton = createPrettyButton("PLAY");
+            //Botón de Cargar Partida (solo aparece si existe el archivo)
+            if (SaveManager.hasSave()) {
+                TextButton loadButton = createPrettyButton("LOAD GAME");
+                loadButton.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        SaveState state = SaveManager.loadGame();
+                        if (state != null) {
+                            // Configuramos el nivel correcto
+                            ConfigurationManager.setStartLevel(state.level);
+                            // Creamos la pantalla
+                            GameScreen loadedGame = new GameScreen(game);
+                            // Le inyectamos los datos guardados
+                            loadedGame.getLogicManager().loadState(state);
+                            // Arrancamos el juego
+                            game.setScreen(loadedGame);
+                            dispose();
+                        }
+                    }
+                });
+                buttonTable.add(loadButton).pad(20).fillX().row();
+            }
             TextButton instructionsButton = createPrettyButton("INSTRUCTIONS");
             TextButton configButton = createPrettyButton("CONFIGURATION");
             TextButton exitButton = createPrettyButton("EXIT");
@@ -125,6 +151,30 @@ public class MainMenuScreen implements Screen {
         } else {
             //BOTONES MODO PAUSA
             TextButton resumeButton = createPrettyButton("RESUME GAME");
+            //Botón de Guardar Partida en el menú de pausa
+            final TextButton saveButton = createPrettyButton("SAVE GAME");
+            saveButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    // Extraemos los datos actuales
+                    com.svalero.thegreatrubiosbrothers.manager.LogicManager lm = pausedGameScreen.getLogicManager();
+                    SaveState state = new SaveState(
+                        ConfigurationManager.getStartLevel(),
+                        lm.player.getScore(),
+                        lm.player.getLives(),
+                        lm.getTimeLeft(),
+                        lm.player.getX(),
+                        lm.player.getY()
+                    );
+
+                    // Guardamos en el archivo .sav
+                    SaveManager.saveGame(state);
+
+                    // Feedback visual para el jugador
+                    saveButton.setText("SAVED!");
+                }
+            });
+
             TextButton instructionsButton = createPrettyButton("INSTRUCTIONS");
             TextButton quitButton = createPrettyButton("QUIT TO MENU");
 
@@ -152,6 +202,7 @@ public class MainMenuScreen implements Screen {
             });
 
             buttonTable.add(resumeButton).pad(20).fillX().row();
+            buttonTable.add(saveButton).pad(20).fillX().row();
             buttonTable.add(instructionsButton).pad(20).fillX().row();
             buttonTable.add(quitButton).pad(20).fillX().row();
         }
