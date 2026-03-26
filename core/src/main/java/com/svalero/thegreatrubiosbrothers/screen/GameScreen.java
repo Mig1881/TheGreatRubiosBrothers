@@ -93,6 +93,10 @@ public class GameScreen implements Screen {
     public void hide() {
     }
 
+    public com.svalero.thegreatrubiosbrothers.manager.LogicManager getLogicManager() {
+        return logicManager;
+    }
+
     @Override
     public void dispose() {
         levelManager.dispose();

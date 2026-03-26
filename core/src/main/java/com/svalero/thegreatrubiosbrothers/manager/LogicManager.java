@@ -398,4 +398,17 @@ public class LogicManager {
         }
     }
 
+    //Inyecta los datos de la partida guardada
+    public void loadState(com.svalero.thegreatrubiosbrothers.model.SaveState state) {
+        this.timeLeft = state.timeLeft;
+        this.player.setScore(state.score);
+        this.player.setLives(state.lives);
+
+        // Coloca al jugador exactamente donde se guardó
+        this.player.getPosition().set(state.playerX, state.playerY);
+        this.player.getRect().setPosition(state.playerX, state.playerY);
+
+        System.out.println("¡Datos de partida inyectados en el LogicManager");
+    }
+
 }
