@@ -4,13 +4,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.svalero.thegreatrubiosbrothers.characters.enemies.Enemy2;
-import com.svalero.thegreatrubiosbrothers.characters.enemies.Enemy3;
+import com.svalero.thegreatrubiosbrothers.characters.enemies.*;
 import com.svalero.thegreatrubiosbrothers.util.Constans;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
-import com.svalero.thegreatrubiosbrothers.characters.enemies.Enemy;
-import com.svalero.thegreatrubiosbrothers.characters.enemies.Enemy1;
 import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +67,8 @@ public class LevelManager {
                     enemyList.add(new Enemy2(new Vector2(x, y)));
                 } else if (type.equals("enemy3")) {
                     enemyList.add(new Enemy3(new Vector2(x, y)));
+                } else if (type.equals("enemy4")) {
+                    enemyList.add(new Enemy4(new Vector2(x, y)));
                 }
             }
         }

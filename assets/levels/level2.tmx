@@ -9,7 +9,7 @@
  <tileset firstgid="2891" source="enemy3.tsx"/>
  <layer id="1" name="terrain" width="140" height="11">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACtVXWU7DQAyNEiQ+cgIWsZyjB6j605yjDSCWG0IRyz24B46QJde1Jx5nJh2e9JTJ7Jn3Yifrpqo6oIR1cxx2R1oXuSDnMZSXzeHVw9BYzz45Vq2sowddIxP1+Y+g5zacFZ6Xdp4aJF0RWOZX77xYTg189lSemeIXqkUu4Boxa6Xyy6I55LL9o8cvuBf0xRx+SQ2PX7iGmpZj+mjt3rgrzTvFLxZY/CLlGVo/l19SrFFiPrLoWopfEGN+8Y4tDR6/YEzGPnhvwZheq1bWm8ev0vwSwuCXUD6V/KLFcGts53Np9bHfE7niS19X1R3wHvhQ29utOYiWuVe1/im+X2ibBr6fvVzU7vej30K5gJ7g+ciSnx5BmyfgM/ClzueXV5j7DbgDvgt+GWsvEaH/ozlBfW95L6b8k3yANp/AL+B3Rr+cwdhz4AXwUphnrL0U0Jif6n/agpAnYjHFL1ew7jXwBnireGXg5tTOLbAPlPtAXSxj9uXllq2F99wv2EavvByqk5gT2rPOoQs/01C91neKhl49PP6XzjX2uej4EH9O0nAjzJdCC+1d+gW8owgOEBgAAA==
+   H4sIAAAAAAAACtVXWU7DQAyNEiQ+egIKYjlHDxD1pzlHG0AsN2QRyz24B86HJcvYjseZScOTnmY6a8fvxZPsmqrqgBJ2zXHYHWlf5IbEY6i3zd8yQmtu5H9ybFeyjhF0jUzU5z+Cxm2IFcZLi6cGSVcE1nkZXRfruYFnz+WZKX6hWpQC7pGyVy6/bBqbOIaWnrOgL+bwS25E/MI11LQc00frj+Zdad0pfvHA4xfpnqHtc/klxx5LvI88ui7FL4gxv0TnLg0Rv/Ax7crvrTG9Bm0lvXn+WppfLAx+se5TyS9aDvfmdr6W1p76PlEqv/R1Vd0C74D3tb/fewfROo+3Nj7H+4u2J0XLNKD3EI0pxrp0fkFP8PvIcz89gDaPwCfgc13OLy+w9ivwDfgu+GWsPwVz5XPr+2hOUN97nosp3yQfoM0n8Av4XdAvZzB3DTwHXgjrjPWnoKRmNOfn+p72wPJEKqb45RL2vQJeA28Urwzcn/p5APZGvTfaUpnyv6I8sL3wN/cL9tGS1602iSWhnXUOXXhMrXZt7BQNo3pE/C/FNfVcdL7Fn5M83Avr5dBCe5Z+AXQLWAAQGAAA
   </data>
  </layer>
  <layer id="3" name="Background" width="140" height="11">
@@ -18,35 +18,35 @@
   </data>
  </layer>
  <objectgroup id="4" name="enemies">
-   <object id="20" gid="2890" x="343.333" y="143.667" width="24" height="17">
-    <properties>
-     <property name="type" value="enemy2"/>
-    </properties>
-   </object>
-   <object id="21" gid="2890" x="539.333" y="95" width="24" height="17">
-    <properties>
-     <property name="type" value="enemy2"/>
-    </properties>
-   </object>
-   <object id="22" gid="2890" x="1026" y="143.667" width="24" height="17">
-    <properties>
-     <property name="type" value="enemy2"/>
-    </properties>
-   </object>
-   <object id="23" gid="2891" x="1854.67" y="95" width="24" height="21">
-    <properties>
-     <property name="type" value="enemy3"/>
-    </properties>
-   </object>
-   <object id="24" gid="2891" x="2112" y="96.3333" width="24" height="21">
-    <properties>
-     <property name="type" value="enemy3"/>
-    </properties>
-   </object>
-   <object id="25" gid="2890" x="233.333" y="143.667" width="24" height="17">
-    <properties>
-     <property name="type" value="enemy2"/>
-    </properties>
-   </object>
-  </objectgroup>
+  <object id="20" gid="2890" x="343.333" y="143.667" width="24" height="17">
+   <properties>
+    <property name="type" value="enemy2"/>
+   </properties>
+  </object>
+  <object id="21" gid="2890" x="539.333" y="95" width="24" height="17">
+   <properties>
+    <property name="type" value="enemy2"/>
+   </properties>
+  </object>
+  <object id="22" gid="2890" x="1026" y="143.667" width="24" height="17">
+   <properties>
+    <property name="type" value="enemy2"/>
+   </properties>
+  </object>
+  <object id="23" gid="2891" x="1854.67" y="95" width="24" height="21">
+   <properties>
+    <property name="type" value="enemy3"/>
+   </properties>
+  </object>
+  <object id="24" gid="2891" x="2112" y="96.3333" width="24" height="21">
+   <properties>
+    <property name="type" value="enemy3"/>
+   </properties>
+  </object>
+  <object id="25" gid="2890" x="233.333" y="143.667" width="24" height="17">
+   <properties>
+    <property name="type" value="enemy2"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

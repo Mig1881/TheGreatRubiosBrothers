@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="tileset1" tilewidth="16" tileheight="16" spacing="2" tilecount="558" columns="31">
  <image source="tileset.jpg" width="570" height="337"/>
+ <tile id="258">
+  <properties>
+   <property name="ground" value=""/>
+  </properties>
+ </tile>
+ <tile id="259">
+  <properties>
+   <property name="ground" value=""/>
+  </properties>
+ </tile>
+ <tile id="260">
+  <properties>
+   <property name="ground" value=""/>
+  </properties>
+ </tile>
+ <tile id="261">
+  <properties>
+   <property name="ground" value=""/>
+  </properties>
+ </tile>
  <tile id="382">
   <properties>
    <property name="water" value=""/>

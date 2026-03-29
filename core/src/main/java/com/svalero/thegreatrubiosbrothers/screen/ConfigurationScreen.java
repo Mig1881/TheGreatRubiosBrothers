@@ -82,10 +82,10 @@ public class ConfigurationScreen implements Screen {
                 int currentLevel = ConfigurationManager.getStartLevel();
                 int nextLevel;
 
-                if (currentLevel == 1) {
-                    nextLevel = 2;
+                if (currentLevel < 4) {
+                    nextLevel = currentLevel + 1; // Sumo 1 si estamos en el 1, 2 o 3
                 } else {
-                    nextLevel = 1;
+                    nextLevel = 1; // Si llegamos al 4, volvemos al 1
                 }
 
                 ConfigurationManager.setStartLevel(nextLevel);

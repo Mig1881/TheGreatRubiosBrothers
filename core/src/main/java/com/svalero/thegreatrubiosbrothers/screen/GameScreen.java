@@ -50,7 +50,7 @@ public class GameScreen implements Screen {
             // ¿en qué nivel estamos?
             int currentLevel = com.svalero.thegreatrubiosbrothers.manager.ConfigurationManager.getStartLevel();
 
-            if (currentLevel == 1) {
+            if (currentLevel < 4) {
                 // Si estamos en el 1, cambiamos la config al 2 y recargamos la pantalla de juego
                 com.svalero.thegreatrubiosbrothers.manager.ConfigurationManager.setStartLevel(2);
                 game.setScreen(new GameScreen(game));
