@@ -80,9 +80,7 @@ public class LogicManager {
 
         for (Enemy enemy : enemies) {
             enemy.update(dt);
-            if (!enemy.isSquashed()) { // Solo aplicamos físicas si está vivo
-                applyEnemyPhysics(enemy, dt);
-            }
+            applyEnemyPhysics(enemy, dt);
         }
     }
 
@@ -208,7 +206,6 @@ public class LogicManager {
                         player.velocity.x = 0; // Frenamos en seco
                         break;
                     } else if (cell.getTile().getProperties().containsKey("exit")) {
-                        // Final¡¡
                         System.out.println("¡NIVEL COMPLETADO! Has tocado el exit.");
                         levelCompleted = true;
 
@@ -297,7 +294,7 @@ public class LogicManager {
                     enemy.getPosition().x = rightX * Constans.TILE_WIDTH - enemy.getWidth();
                     enemy.getRect().setX(enemy.getPosition().x);
 
-                    // ¡MEDIA VUELTA! Invertimos la velocidad para que camine a la izquierda
+                    //Media vuelta, se invierte la velocidad para que camine a la izquierda
                     enemy.velocity.x = -enemy.velocity.x;
                     break;
                 }
@@ -334,7 +331,12 @@ public class LogicManager {
 
                     player.setScore(player.getScore() + 1); // Suma 1 punto (10 en el HUD)
 
-                    // Reproducimos el sonido usando el AssetManager de tu clase R
+                    com.badlogic.gdx.audio.Sound hitSound = R.assets.get("sounds/hit.wav", com.badlogic.gdx.audio.Sound.class);
+                    if (hitSound != null) {
+                        hitSound.play();
+                    }
+
+                    // Sonido original de la puntuación
                     com.badlogic.gdx.audio.Sound bonusSound = R.assets.get("sounds/bonus_score.wav", com.badlogic.gdx.audio.Sound.class);
                     if (bonusSound != null) {
                         bonusSound.play();
@@ -372,9 +374,12 @@ public class LogicManager {
                     // Sumo el punto a Player
                     player.setScore(player.getScore() + 1);
                     System.out.println("¡Diamante recogido! Puntuación total: " + player.getScore());
-                    //Sonido
-                    com.badlogic.gdx.Gdx.audio.newSound(com.badlogic.gdx.Gdx.files.internal("sounds/score_simple.wav")).play();
-                    //Borramos el diamante del mapa dejándolo nulo
+                    com.badlogic.gdx.audio.Sound diamondSound = R.assets.get("sounds/score_simple.wav", com.badlogic.gdx.audio.Sound.class);
+                    if (diamondSound != null) {
+                        diamondSound.play();
+                    }
+
+                    //Borro el diamante del mapa dejándolo nulo
                     layer.setCell(x, y, null);
                 }
             }

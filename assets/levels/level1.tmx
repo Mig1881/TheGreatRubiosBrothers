@@ -12,7 +12,7 @@
  </layer>
  <layer id="3" name="Background" width="122" height="20">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu3QWQrCMBSF4dBYZxfgsDEVZ/e/Bg+0hWJLvEmcHv4PDiU0dyDOAQAAAAAAAAAAAAAQb1k4t1LWyqb49Tb4lsI755WBr85DfUfKWJkoU9+9E2OmmrmyCNT2zUzVnmeZndq7Ydk95/0sLP23+rdT9vWdg75H5aSclYvv3olxVc1NuQdq+2amas+zzE7t3bDsnvN+Fp/u/0/KskpubU6fd3ve5dU55AFsBYz1ICYAAA==
+   H4sIAAAAAAAACu3RWwrCMBCF4dBY7y7Ay05ciYp3978GD7SFYkOcJgp9+D84pKWZmdA4BwAAAAAAAAAAAABAf+vCuY2yVXZFep+9Dz9jmArdkVdG9V2NtU6UqTJT5r67p4+FapbKKlIbmpmqPc8yO7V3w3L2nP9nYel/0Lejcqr3nLVelKtyU+6+u6ePh2qeyitSG5qZqj3PMju1d8Ny9pz/Z/Hv/kNSllVya3P6/NrnWb69x7wBwy+kFSAmAAA=
   </data>
  </layer>
  <objectgroup id="4" name="enemies">
