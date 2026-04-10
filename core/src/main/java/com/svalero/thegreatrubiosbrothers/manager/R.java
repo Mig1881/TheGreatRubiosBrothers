@@ -12,10 +12,12 @@ public class R {
 
     public static AssetManager assets = new AssetManager();
 
-
     public static void loadAllResources() {
         assets.load(Constans.TEXTURE_ATLAS, TextureAtlas.class);
         assets.load(Constans.TEXTURES_DIR + "libgdx.png", Texture.class);
+        assets.load(Constans.CHARACTERS_DIR + "bomb.png", Texture.class);
+        assets.load(Constans.CHARACTERS_DIR + "lollipop.png", Texture.class);
+        assets.load(Constans.CHARACTERS_DIR + "shot.png", Texture.class);
 
         loadSounds();
         loadMusics();
@@ -26,6 +28,7 @@ public class R {
         assets.load(Constans.SOUND_DIR + "hit.wav", Sound.class);
         assets.load(Constans.SOUND_DIR + "bonus_score.wav", Sound.class);
         assets.load(Constans.SOUND_DIR + "coins_appear.wav", Sound.class);
+        assets.load(Constans.SOUND_DIR + "shooting.wav", Sound.class);
     }
 
     private static void loadMusics() {
@@ -35,11 +38,9 @@ public class R {
         assets.load(Constans.MUSIC_DIR + "06_High Scores.mp3", Music.class);
     }
 
-
     public static boolean update() {
         return assets.update();
     }
-
 
     public static TextureRegion getRegion(String name) {
         return assets.get(Constans.TEXTURE_ATLAS, TextureAtlas.class).findRegion(name);

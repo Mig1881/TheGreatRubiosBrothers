@@ -4,6 +4,7 @@
  <tile id="1">
   <properties>
    <property name="ground" value=""/>
+   <property name="power" value=""/>
   </properties>
  </tile>
  <tile id="2">

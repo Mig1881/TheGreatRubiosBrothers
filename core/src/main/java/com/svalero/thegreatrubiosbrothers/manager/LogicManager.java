@@ -3,10 +3,15 @@ package com.svalero.thegreatrubiosbrothers.manager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.svalero.thegreatrubiosbrothers.characters.Player;
 import com.svalero.thegreatrubiosbrothers.util.Constans;
 import com.svalero.thegreatrubiosbrothers.characters.enemies.Enemy;
+
+import com.svalero.thegreatrubiosbrothers.items.PowerUp;
+import com.svalero.thegreatrubiosbrothers.items.Fireball;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -15,6 +20,12 @@ public class LogicManager {
     public Player player;
     private LevelManager levelManager;
     public List<Enemy> enemies;
+    public List<PowerUp> powerUps;
+    public List<Fireball> fireballs;
+    private List<String> emptyBlocks;
+
+    private Rectangle viewPort;
+
     private float timeLeft;
     private float deathTimer = 0;
     private boolean gameOver = false;
@@ -23,7 +34,15 @@ public class LogicManager {
     public LogicManager() {
         player = new Player(R.getRegion("Player1-right0"), new Vector2(50, 150));
         enemies = new ArrayList<>();
+        powerUps = new ArrayList<>();
+        fireballs = new ArrayList<>();
+        emptyBlocks = new ArrayList<>();
+        viewPort = new Rectangle();
         this.timeLeft = 100f;
+    }
+
+    public void setViewPort(float x, float y, float width, float height) {
+        this.viewPort.set(x, y, width, height);
     }
 
     public void setLevelManager(LevelManager levelManager) {
@@ -31,106 +50,109 @@ public class LogicManager {
         this.enemies = levelManager.loadEnemies();
     }
 
-    public float getTimeLeft() {
-        return timeLeft;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public boolean isLevelCompleted() {
-        return levelCompleted;
-    }
+    public float getTimeLeft() { return timeLeft; }
+    public boolean isGameOver() { return gameOver; }
+    public boolean isLevelCompleted() { return levelCompleted; }
 
     public void update(float dt) {
-        // Logica de muerte y tiempo
         if (player.getCurrentState() == Player.State.DEAD) {
             deathTimer += dt;
-            // Esperamos 3 segundos para que caiga por el barranco y suene el "uuh"
             if (deathTimer > 3.0f) {
                 if (player.getLives() > 0) {
-                    respawn(); // Quedan vidas -> Volvemos a empezar
+                    respawn();
                 } else {
-                    gameOver = true; // 0 vidas -> Se acabó el juego
+                    gameOver = true;
                 }
             }
         } else {
-            handleInput(); // Si está vivo, leemos el teclado
+            handleInput();
 
-            // Y restamos el tiempo
             timeLeft -= dt;
             if (timeLeft < 0) {
                 timeLeft = 0;
-                player.die(); // ¡muere si se acaba el tiempo!
+                player.die();
             }
-            // Si la coordenada Y del jugador baja de 0 (es decir, se sale por debajo de la pantalla)
             if (player.getY() < -10) {
                 player.die();
             }
         }
 
-        applyPhysics(dt); // La gravedad sigue aplicando para que el cadáver caiga
+        applyPhysics(dt);
 
         if (player.getCurrentState() != Player.State.DEAD) {
             player.updateAnimation(dt);
-            checkPlayerEnemyCollisions(); // Compruebo los choques
-            checkCollectibles();//Compruebo si nos estamos comiendo un diammante
+            checkPlayerEnemyCollisions();
+            checkCollectibles();
+            checkPlayerPowerUpCollisions();
+            checkFireballEnemyCollisions();
         }
 
         for (Enemy enemy : enemies) {
             enemy.update(dt);
             applyEnemyPhysics(enemy, dt);
         }
+
+        for (int i = powerUps.size() - 1; i >= 0; i--) {
+            PowerUp p = powerUps.get(i);
+            p.update(dt);
+            if (p.isSpawned()) applyPowerUpCollisions(p);
+            if (p.isToDestroy()) powerUps.remove(i);
+        }
+
+        for (int i = fireballs.size() - 1; i >= 0; i--) {
+            Fireball f = fireballs.get(i);
+            f.update(dt);
+            applyFireballCollisions(f);
+            if (f.isToDestroy()) fireballs.remove(i);
+        }
     }
 
     private void handleInput() {
-        // Reseteo la velocidad horizontal en cada frame para que se pare si soltamos la tecla
         player.velocity.x = 0;
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             player.velocity.x = Constans.PLAYER_SPEED;
-            player.setRunningRight(true); // Gira a la derecha
+            player.setRunningRight(true);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             player.velocity.x = -Constans.PLAYER_SPEED;
-            //se mueve a tres pixeles en el eje x en cada tick de la logica, a 60 frames por segundo son 180 pixeles por segundo
-            player.setRunningRight(false); // Gira a la izquierda
+            player.setRunningRight(false);
         }
 
-        // Salto básico, solo se salta si esta en el suelo.
-        //inicialmete la velocidad es 12, pero la grabvedad le empezara a restar hasta que llege a 0
-        if (player.isOnGround() && (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.UP))) {
+        if (player.isOnGround() && Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             player.velocity.y = Constans.JUMPING_SPEED;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && player.isHasFire()) {
+            com.badlogic.gdx.graphics.Texture shotTex = R.assets.get(Constans.CHARACTERS_DIR + "shot.png", com.badlogic.gdx.graphics.Texture.class);
+            com.badlogic.gdx.graphics.g2d.TextureRegion shotRegion = new com.badlogic.gdx.graphics.g2d.TextureRegion(shotTex);
+
+            float spawnX = player.isRunningRight() ? player.getX() + player.getWidth() : player.getX() - shotRegion.getRegionWidth();
+            Vector2 spawnPos = new Vector2(spawnX, player.getY() + player.getHeight() / 2f);
+
+            fireballs.add(new Fireball(shotRegion, spawnPos, player.isRunningRight()));
+
+            com.badlogic.gdx.audio.Sound shootSound = R.assets.get(Constans.SOUND_DIR + "shooting.wav", com.badlogic.gdx.audio.Sound.class);
+            if (shootSound != null) shootSound.play();
         }
     }
 
     private void applyPhysics(float dt) {
-        // Aplico la gravedad a la velocidad vertical, aqui si que entra el dt
-        //Resto 20 * una pequeña fraccion de segundohace que la caida se acelere frame aframe, simulando aceleracion
         player.velocity.y -= Constans.GRAVITY * dt;
-
-        //Movimiento jugador SOLO en el eje Y (Arriba/Abajo)
         player.move(0, player.velocity.y);
-
-        //Asumo que está en el aire (así si te caes por un barranco caminando, no puedes saltar en el aire)
         player.setOnGround(false);
 
-        //Si no esta muerto ¿Colision con el suelo?
         if (player.getCurrentState() != Player.State.DEAD) {
             if (levelManager != null) {
                 checkVerticalCollisions();
             }
         }
 
-        //Movimiento del jugador en el eje X (Izquierda/Derecha)
         player.move(player.velocity.x, 0);
-        //Si no esta muerto, compruebo si choca contra los muros
         if (player.getCurrentState() != Player.State.DEAD) {
             if (levelManager != null) {
                 checkHorizontalCollisions();
 
-                // Un pequeño extra de seguridad: no dejar que se salga por la izquierda del mapa
                 if (player.getX() < 0) {
                     player.getPosition().x = 0;
                     player.getRect().setX(0);
@@ -142,122 +164,163 @@ public class LogicManager {
 
     private void checkVerticalCollisions() {
         TiledMapTileLayer layer = levelManager.getCollisionLayer();
-
-        // Columnas (X) que ocupa el jugador (desde el lado izquierdo hasta el derecho)
         int startX = (int) (player.getX() / Constans.TILE_WIDTH);
         int endX = (int) ((player.getX() + player.getWidth() - 1) / Constans.TILE_WIDTH);
 
-        //  El jugador está CAYENDO
         if (player.velocity.y < 0) {
-            // Miramos la fila (Y) que está tocando los PIES del jugador
             int bottomY = (int) (player.getY() / Constans.TILE_HEIGHT);
-
             for (int x = startX; x <= endX; x++) {
                 TiledMapTileLayer.Cell cell = layer.getCell(x, bottomY);
-
                 if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
-                    // Chocamos con el suelo
                     player.getPosition().y = (bottomY + 1) * Constans.TILE_HEIGHT;
                     player.getRect().setY(player.getPosition().y);
                     player.velocity.y = 0;
-                    player.setOnGround(true); // Podemos volver a saltar
+                    player.setOnGround(true);
                     break;
                 }
             }
-        }
-        // El jugador está SALTANDO (Hacia arriba)
-        else if (player.velocity.y > 0) {
-            // Miramos la fila (Y) que está tocando la CABEZA del jugador
+        } else if (player.velocity.y > 0) {
             int topY = (int) ((player.getY() + player.getHeight() - 1) / Constans.TILE_HEIGHT);
+            boolean hitCeiling = false;
 
             for (int x = startX; x <= endX; x++) {
                 TiledMapTileLayer.Cell cell = layer.getCell(x, topY);
-                //Compruebo si hay algun bloque..
                 if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
-                    player.getPosition().y = topY * Constans.TILE_HEIGHT - player.getHeight();
-                    player.getRect().setY(player.getPosition().y);
-                    // Al poner la velocidad a 0, la gravedad (que siempre resta) lo hará caer en el siguiente frame
-                    player.velocity.y = 0;
-                    break;
+                    hitCeiling = true;
+
+                    if (cell.getTile().getProperties().containsKey("power")) {
+                        String blockId = x + "-" + topY;
+                        if (!emptyBlocks.contains(blockId)) {
+                            emptyBlocks.add(blockId);
+
+                            com.badlogic.gdx.audio.Sound coinSound = R.assets.get(Constans.SOUND_DIR + "coins_appear.wav", com.badlogic.gdx.audio.Sound.class);
+                            if (coinSound != null) coinSound.play();
+
+                            Vector2 spawnPos = new Vector2(x * Constans.TILE_WIDTH, topY * Constans.TILE_HEIGHT);
+
+                            if (!player.isHasFire()) {
+                                com.badlogic.gdx.utils.Array<com.badlogic.gdx.graphics.g2d.TextureRegion> frames = new com.badlogic.gdx.utils.Array<>();
+                                for (int i = 0; i <= 3; i++) frames.add(R.getRegion("Powerup-" + i));
+                                com.badlogic.gdx.graphics.g2d.Animation<com.badlogic.gdx.graphics.g2d.TextureRegion> fireAnim = new com.badlogic.gdx.graphics.g2d.Animation<>(0.1f, frames);
+                                powerUps.add(new PowerUp(fireAnim, spawnPos, PowerUp.Type.FIRE));
+
+                            } else if (!player.isHasBomb()) {
+                                com.badlogic.gdx.graphics.Texture bombTex = R.assets.get(Constans.CHARACTERS_DIR + "bomb.png", com.badlogic.gdx.graphics.Texture.class);
+                                powerUps.add(new PowerUp(new com.badlogic.gdx.graphics.g2d.TextureRegion(bombTex), spawnPos, PowerUp.Type.BOMB));
+
+                            } else if (!player.isHasLife()) {
+                                com.badlogic.gdx.graphics.Texture lollipopTex = R.assets.get(Constans.CHARACTERS_DIR + "lollipop.png", com.badlogic.gdx.graphics.Texture.class);
+                                powerUps.add(new PowerUp(new com.badlogic.gdx.graphics.g2d.TextureRegion(lollipopTex), spawnPos, PowerUp.Type.LIFE));
+
+                            } else {
+                                com.badlogic.gdx.graphics.Texture bombTex = R.assets.get(Constans.CHARACTERS_DIR + "bomb.png", com.badlogic.gdx.graphics.Texture.class);
+                                powerUps.add(new PowerUp(new com.badlogic.gdx.graphics.g2d.TextureRegion(bombTex), spawnPos, PowerUp.Type.BOMB));
+                            }
+                        }
+                    }
                 }
+            }
+
+            if (hitCeiling) {
+                player.getPosition().y = topY * Constans.TILE_HEIGHT - player.getHeight();
+                player.getRect().setY(player.getPosition().y);
+                player.velocity.y = 0;
             }
         }
     }
 
     private void checkHorizontalCollisions() {
         TiledMapTileLayer layer = levelManager.getCollisionLayer();
-
-        // Calculo desde dónde hasta dónde mide David en vertical para comprobar toda su altura
         int startY = (int) (player.getY() / Constans.TILE_HEIGHT);
         int endY = (int) ((player.getY() + player.getHeight() - 1) / Constans.TILE_HEIGHT);
 
-        // hacia la derecha
         if (player.velocity.x > 0) {
-            // Calculo en qué columna de Tiled está el borde DERECHO de nuestro jugador
             int rightX = (int) ((player.getX() + player.getWidth() - 1) / Constans.TILE_WIDTH);
-
             for (int y = startY; y <= endY; y++) {
                 TiledMapTileLayer.Cell cell = layer.getCell(rightX, y);
-                if (cell != null) {
-                    if (cell.getTile().getProperties().containsKey("ground")) {
-                        // ¡Muro detectado! Lo pego al lado izquierdo del bloque
-                        player.getPosition().x = rightX * Constans.TILE_WIDTH - player.getWidth();
-                        player.getRect().setX(player.getPosition().x);
-                        player.velocity.x = 0; // Frenamos en seco
-                        break;
-                    } else if (cell.getTile().getProperties().containsKey("exit")) {
-                        System.out.println("¡NIVEL COMPLETADO! Has tocado el exit.");
-                        levelCompleted = true;
-
-                    }
+                if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
+                    player.getPosition().x = rightX * Constans.TILE_WIDTH - player.getWidth();
+                    player.getRect().setX(player.getPosition().x);
+                    player.velocity.x = 0;
+                    break;
                 }
             }
-        }
-        // hacia la izquierda
-        else if (player.velocity.x < 0) {
-            // Calculamos en qué columna de Tiled está el borde IZQUIERDO de nuestro jugador
+        } else if (player.velocity.x < 0) {
             int leftX = (int) (player.getX() / Constans.TILE_WIDTH);
-
             for (int y = startY; y <= endY; y++) {
                 TiledMapTileLayer.Cell cell = layer.getCell(leftX, y);
-                if (cell != null) {
-                    if (cell.getTile().getProperties().containsKey("ground")) {
-                        // ¡Muro detectado! Lo pegamos al lado derecho del bloque
-                        player.getPosition().x = (leftX + 1) * Constans.TILE_WIDTH;
-                        player.getRect().setX(player.getPosition().x);
-                        player.velocity.x = 0;
-                        break;
-                    } else if (cell.getTile().getProperties().containsKey("exit")) {
-                        System.out.println("¡NIVEL COMPLETADO! Has tocado el exit.");
-                        levelCompleted = true;
-                    }
+                if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
+                    player.getPosition().x = (leftX + 1) * Constans.TILE_WIDTH;
+                    player.getRect().setX(player.getPosition().x);
+                    player.velocity.x = 0;
+                    break;
                 }
             }
         }
     }
 
-    // --- FÍSICAS DE LOS ENEMIGOS ---
+    private void applyPowerUpCollisions(PowerUp p) {
+        if (levelManager == null) return;
+        TiledMapTileLayer layer = levelManager.getCollisionLayer();
 
-    private void applyEnemyPhysics(Enemy enemy, float dt) {
-        // Solo aplicamos la gravedad si el enemigo NO está volando (La abeja no se cae)
-        if (!enemy.isFlying()) {
-            enemy.velocity.y -= Constans.GRAVITY * dt;
-        }
+        int startX = (int) (p.getPosition().x / Constans.TILE_WIDTH);
+        int endX = (int) ((p.getPosition().x + p.getBounds().width - 1) / Constans.TILE_WIDTH);
 
-        enemy.move(0, enemy.velocity.y);
-
-        if (levelManager != null) {
-            checkEnemyVerticalCollisions(enemy);
-        }
-
-        //Movimiento lateral (patrulla)
-        enemy.move(enemy.velocity.x, 0);
-
-        if (levelManager != null) {
-            if (!enemy.isFlying()) {
-                checkEnemyHorizontalCollisions(enemy);
+        if (p.velocity.y < 0) {
+            int bottomY = (int) (p.getPosition().y / Constans.TILE_HEIGHT);
+            for (int x = startX; x <= endX; x++) {
+                TiledMapTileLayer.Cell cell = layer.getCell(x, bottomY);
+                if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
+                    p.landOnGround((bottomY + 1) * Constans.TILE_HEIGHT);
+                    break;
+                }
             }
         }
+
+        int startY = (int) (p.getPosition().y / Constans.TILE_HEIGHT);
+        int endY = (int) ((p.getPosition().y + p.getBounds().height - 1) / Constans.TILE_HEIGHT);
+
+        if (p.velocity.x > 0) {
+            int rightX = (int) ((p.getPosition().x + p.getBounds().width - 1) / Constans.TILE_WIDTH);
+            for (int y = startY; y <= endY; y++) {
+                TiledMapTileLayer.Cell cell = layer.getCell(rightX, y);
+                if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
+                    p.getPosition().x = rightX * Constans.TILE_WIDTH - p.getBounds().width;
+                    p.reverseVelocity();
+                    break;
+                }
+            }
+        } else if (p.velocity.x < 0) {
+            int leftX = (int) (p.getPosition().x / Constans.TILE_WIDTH);
+            for (int y = startY; y <= endY; y++) {
+                TiledMapTileLayer.Cell cell = layer.getCell(leftX, y);
+                if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
+                    p.getPosition().x = (leftX + 1) * Constans.TILE_WIDTH;
+                    p.reverseVelocity();
+                    break;
+                }
+            }
+        }
+    }
+
+    private void applyFireballCollisions(Fireball f) {
+        if (levelManager == null) return;
+        TiledMapTileLayer layer = levelManager.getCollisionLayer();
+        int mapX = (int) ((f.getPosition().x + f.getBounds().width / 2) / Constans.TILE_WIDTH);
+        int mapY = (int) ((f.getPosition().y + f.getBounds().height / 2) / Constans.TILE_HEIGHT);
+
+        TiledMapTileLayer.Cell cell = layer.getCell(mapX, mapY);
+        if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
+            f.setToDestroy(true);
+        }
+    }
+
+    private void applyEnemyPhysics(Enemy enemy, float dt) {
+        if (!enemy.isFlying()) enemy.velocity.y -= Constans.GRAVITY * dt;
+        enemy.move(0, enemy.velocity.y);
+        if (levelManager != null) checkEnemyVerticalCollisions(enemy);
+        enemy.move(enemy.velocity.x, 0);
+        if (levelManager != null && !enemy.isFlying()) checkEnemyHorizontalCollisions(enemy);
     }
 
     private void checkEnemyVerticalCollisions(Enemy enemy) {
@@ -265,16 +328,14 @@ public class LogicManager {
         int startX = (int) (enemy.getX() / Constans.TILE_WIDTH);
         int endX = (int) ((enemy.getX() + enemy.getWidth() - 1) / Constans.TILE_WIDTH);
 
-        // Los enemigos solo caen, no saltan, solo comprruebo hacia abajo
         if (enemy.velocity.y < 0) {
             int bottomY = (int) (enemy.getY() / Constans.TILE_HEIGHT);
-
             for (int x = startX; x <= endX; x++) {
                 TiledMapTileLayer.Cell cell = layer.getCell(x, bottomY);
                 if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
                     enemy.getPosition().y = (bottomY + 1) * Constans.TILE_HEIGHT;
                     enemy.getRect().setY(enemy.getPosition().y);
-                    enemy.velocity.y = 0; // Toca el suelo y deja de caer
+                    enemy.velocity.y = 0;
                     break;
                 }
             }
@@ -286,28 +347,24 @@ public class LogicManager {
         int startY = (int) (enemy.getY() / Constans.TILE_HEIGHT);
         int endY = (int) ((enemy.getY() + enemy.getHeight() - 1) / Constans.TILE_HEIGHT);
 
-        if (enemy.velocity.x > 0) { // Caminando hacia la derecha
+        if (enemy.velocity.x > 0) {
             int rightX = (int) ((enemy.getX() + enemy.getWidth() - 1) / Constans.TILE_WIDTH);
             for (int y = startY; y <= endY; y++) {
                 TiledMapTileLayer.Cell cell = layer.getCell(rightX, y);
                 if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
                     enemy.getPosition().x = rightX * Constans.TILE_WIDTH - enemy.getWidth();
                     enemy.getRect().setX(enemy.getPosition().x);
-
-                    //Media vuelta, se invierte la velocidad para que camine a la izquierda
                     enemy.velocity.x = -enemy.velocity.x;
                     break;
                 }
             }
-        } else if (enemy.velocity.x < 0) { // Caminando hacia la izquierda
+        } else if (enemy.velocity.x < 0) {
             int leftX = (int) (enemy.getX() / Constans.TILE_WIDTH);
             for (int y = startY; y <= endY; y++) {
                 TiledMapTileLayer.Cell cell = layer.getCell(leftX, y);
                 if (cell != null && cell.getTile().getProperties().containsKey("ground")) {
                     enemy.getPosition().x = (leftX + 1) * Constans.TILE_WIDTH;
                     enemy.getRect().setX(enemy.getPosition().x);
-
-                    // Se da la media vuelta, se invierte la velocidad para que camine a la derecha
                     enemy.velocity.x = -enemy.velocity.x;
                     break;
                 }
@@ -316,37 +373,42 @@ public class LogicManager {
     }
 
     private void checkPlayerEnemyCollisions() {
-        if (player.getCurrentState() == Player.State.DEAD) return; // Los fantasmas no chocan
+        if (player.getCurrentState() == Player.State.DEAD) return;
 
         for (Enemy enemy : enemies) {
-            if (enemy.isSquashed()) continue; // No interactua con cadáveres
+            if (enemy.isSquashed()) continue;
 
-            // Si los dos rectángulos se cruzan... ¡Contacto!
             if (player.getRect().overlaps(enemy.getRect())) {
-
-                // Si el jugador está cayendo Y su borde inferior está más alto que el centro del enemigo
                 if (player.velocity.y < 0 && player.getY() > enemy.getY() + enemy.getHeight() / 2f) {
-                    //Lo pisa
                     enemy.squash();
-
-                    player.setScore(player.getScore() + 1); // Suma 1 punto (10 en el HUD)
+                    player.setScore(player.getScore() + 1);
 
                     com.badlogic.gdx.audio.Sound hitSound = R.assets.get("sounds/hit.wav", com.badlogic.gdx.audio.Sound.class);
-                    if (hitSound != null) {
-                        hitSound.play();
-                    }
-
-                    // Sonido original de la puntuación
+                    if (hitSound != null) hitSound.play();
                     com.badlogic.gdx.audio.Sound bonusSound = R.assets.get("sounds/bonus_score.wav", com.badlogic.gdx.audio.Sound.class);
-                    if (bonusSound != null) {
-                        bonusSound.play();
-                    }
+                    if (bonusSound != null) bonusSound.play();
 
-                    // Pequeño rebote para el jugador
                     player.velocity.y = Constans.JUMPING_SPEED * 0.8f;
                 } else {
-                    //Me pilla
                     player.die();
+                }
+            }
+        }
+    }
+
+    private void checkFireballEnemyCollisions() {
+        for (Fireball f : fireballs) {
+            if (f.isToDestroy()) continue;
+            for (Enemy enemy : enemies) {
+                if (enemy.isSquashed()) continue;
+                if (f.getBounds().overlaps(enemy.getRect())) {
+                    enemy.squash();
+                    player.setScore(player.getScore() + 1);
+                    f.setToDestroy(true);
+
+                    com.badlogic.gdx.audio.Sound hitSound = R.assets.get("sounds/hit.wav", com.badlogic.gdx.audio.Sound.class);
+                    if (hitSound != null) hitSound.play();
+                    break;
                 }
             }
         }
@@ -357,63 +419,84 @@ public class LogicManager {
 
         TiledMapTileLayer layer = levelManager.getCollisionLayer();
 
-        // Calculo la caja que ocupa el jugador
         int startX = (int) (player.getX() / Constans.TILE_WIDTH);
         int endX = (int) ((player.getX() + player.getWidth() - 1) / Constans.TILE_WIDTH);
         int startY = (int) (player.getY() / Constans.TILE_HEIGHT);
         int endY = (int) ((player.getY() + player.getHeight() - 1) / Constans.TILE_HEIGHT);
 
-        // Reviso todas las celdas que el jugador está tocando con su cuerpo
         for (int x = startX; x <= endX; x++) {
             for (int y = startY; y <= endY; y++) {
                 TiledMapTileLayer.Cell cell = layer.getCell(x, y);
 
-                // Si la celda existe y tiene "diamond"...
-                if (cell != null && cell.getTile() != null && cell.getTile().getProperties().containsKey("diamond")) {
-
-                    // Sumo el punto a Player
-                    player.setScore(player.getScore() + 1);
-                    System.out.println("¡Diamante recogido! Puntuación total: " + player.getScore());
-                    com.badlogic.gdx.audio.Sound diamondSound = R.assets.get("sounds/score_simple.wav", com.badlogic.gdx.audio.Sound.class);
-                    if (diamondSound != null) {
-                        diamondSound.play();
+                if (cell != null && cell.getTile() != null) {
+                    if (cell.getTile().getProperties().containsKey("diamond")) {
+                        player.setScore(player.getScore() + 1);
+                        com.badlogic.gdx.audio.Sound diamondSound = R.assets.get("sounds/score_simple.wav", com.badlogic.gdx.audio.Sound.class);
+                        if (diamondSound != null) diamondSound.play();
+                        layer.setCell(x, y, null);
                     }
 
-                    //Borro el diamante del mapa dejándolo nulo
-                    layer.setCell(x, y, null);
+                    if (cell.getTile().getProperties().containsKey("exit")) {
+                        levelCompleted = true;
+                    }
                 }
             }
         }
     }
 
-    private void respawn() {
-        // Restauro al player
-        player.setCurrentState(Player.State.IDLE);
-        player.velocity.set(0, 0);
-        player.getPosition().set(50, 150); // ⚠️ Pon aquí tus coordenadas de inicio
-        player.getRect().setPosition(50, 150);
+    private void checkPlayerPowerUpCollisions() {
+        if (player.getCurrentState() == Player.State.DEAD) return;
 
-        // Restauro el tiempo y el contador de muerte
-        timeLeft = 100f;
-        deathTimer = 0;
+        for (int i = powerUps.size() - 1; i >= 0; i--) {
+            PowerUp p = powerUps.get(i);
 
-        // Recargoa los enemigos para que vuelvan a sus posiciones originales
-        if (levelManager != null) {
-            this.enemies = levelManager.loadEnemies();
+            if (p.isSpawned() && player.getRect().overlaps(p.getBounds())) {
+                if (p.getType() == PowerUp.Type.FIRE) {
+                    player.setHasFire(true);
+                } else if (p.getType() == PowerUp.Type.BOMB) {
+                    player.setHasBomb(true);
+                    for (Enemy enemy : enemies) {
+                        if (!enemy.isSquashed() && viewPort.contains(enemy.getX(), enemy.getY())) {
+                            enemy.squash();
+                            player.setScore(player.getScore() + 1);
+                        }
+                    }
+                } else if (p.getType() == PowerUp.Type.LIFE) {
+                    player.setHasLife(true);
+                    player.setLives(player.getLives() + 1);
+                }
+
+                player.setScore(player.getScore() + 5);
+                com.badlogic.gdx.audio.Sound bonusSound = R.assets.get("sounds/bonus_score.wav", com.badlogic.gdx.audio.Sound.class);
+                if (bonusSound != null) bonusSound.play();
+
+                p.setToDestroy(true);
+            }
         }
     }
 
-    //Inyecta los datos de la partida guardada
+    private void respawn() {
+        player.setCurrentState(Player.State.IDLE);
+        player.velocity.set(0, 0);
+        player.getPosition().set(50, 150);
+        player.getRect().setPosition(50, 150);
+        timeLeft = 100f;
+        deathTimer = 0;
+        if (levelManager != null) this.enemies = levelManager.loadEnemies();
+        emptyBlocks.clear();
+        fireballs.clear();
+    }
+
     public void loadState(com.svalero.thegreatrubiosbrothers.model.SaveState state) {
         this.timeLeft = state.timeLeft;
         this.player.setScore(state.score);
         this.player.setLives(state.lives);
 
-        // Coloca al jugador exactamente donde se guardó
+        this.player.setHasFire(state.hasFire);
+        this.player.setHasBomb(state.hasBomb);
+        this.player.setHasLife(state.hasLife);
+
         this.player.getPosition().set(state.playerX, state.playerY);
         this.player.getRect().setPosition(state.playerX, state.playerY);
-
-        System.out.println("¡Datos de partida inyectados en el LogicManager");
     }
-
 }

@@ -5,14 +5,15 @@
  <tileset firstgid="1429" source="tileset2.tsx"/>
  <tileset firstgid="2885" source="Spawns.tsx"/>
  <tileset firstgid="2886" source="tileset5.tsx"/>
+ <tileset firstgid="2890" source="tileset4.tsx"/>
  <layer id="1" name="terrain" width="122" height="20">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu2V3U7CMBiGG3q0cAUo4eeMqbegwSOMB+5CBINwTyBchkAQLkEH1+Kb1MbSwFaWbhJ8n+TJtoP2W99va4UghBBCCCGEEEIIIYQQQgg5LzoSltXVFw9lZdFEcnc9jx7XRHZ5kr9G/zznTaAk+fAXe4mJ7u+p9Nnc447Zv59LQnRhD76U3GplGePKBFlO4S3e/U6qbNu43sO3AnO2+2v32T7PXM63PrJ6hQM49JxbGu+oN4NzuHCsnWWMC5/I8QvGRp5mtvobyJND/fXR5yWy+oAruC64zxX8JxfwElYdz+AsY9IYIcNxoP7ZyYE+xz9Zb3PodVp/fezbNWRVhw3YhC2PhvAKXsMbz/Oa8++rp0mbR48x1dj3SYY5a65J19OE1nPS++h8vgErkogpICYAAA==
+   H4sIAAAAAAAACu2VSQrCMBiFS7P0BA447Kx6BBVdKS70IA443NABh1P5oAbT0DZR0ir6PvgwLpK/eQ9azyOEEEIIIYQQQgghhBBCCPktRgIWwl9XjAuheTMT0ftMHN6JRJmKp7M/z7krQkk2fOJdoiL7/ZaeR0J51ylrE3Pf8xZwCVe+3ax39tgi8+zB/mM9gMOcc9b71XvWv2c237c1strALdw5zs3EHvMO8AhPlrPf2WNDXJ76Ouuuk/p10fMZWV3gFd5y7rmIZy/BMqxYZvjqHptukvKM6zmLrk39uphbxf4arMMGbDo0gC3Yhh3H56rnx82TmM6Re1Ql+jrNIGPVO8l5kkD7n/Y8Mp87X3omzSAmAAA=
   </data>
  </layer>
  <layer id="3" name="Background" width="122" height="20">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAACu3RWwrCMBCF4dBY7y7Ay05ciYp3978GD7SFYkOcJgp9+D84pKWZmdA4BwAAAAAAAAAAAABAf+vCuY2yVXZFep+9Dz9jmArdkVdG9V2NtU6UqTJT5r67p4+FapbKKlIbmpmqPc8yO7V3w3L2nP9nYel/0Lejcqr3nLVelKtyU+6+u6ePh2qeyitSG5qZqj3PMju1d8Ny9pz/Z/Hv/kNSllVya3P6/NrnWb69x7wBwy+kFSAmAAA=
+   H4sIAAAAAAAACu3WWQ6CMBQF0IaKI85fCupCXIkaZ/e/Bm8iJEQQHy2k/bgnuQFj3yD8qBQREREREREREeVNIqWmyAyZIwtkGfnX08UM1/s02XONuhhJkA2yRXaW+7XR08UM1/v49huJiIiI6LdVgP9vSIwkgXmfvS6/Jz8FeEca6aTvqotrD+kjA2Soi2fqGKEmQsYVtWUzTeXnSWab9s5Idrd5fhKS/gd8d0RO6ZkzrhfkityQuy6eqeOBmifyqqgtm2kqP08y27R3RrK7zfOTaLu/T8LwE9tamz5N+97l3+cqb003L5ogJgAA
   </data>
  </layer>
  <objectgroup id="4" name="enemies">

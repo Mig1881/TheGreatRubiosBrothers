@@ -164,7 +164,10 @@ public class MainMenuScreen implements Screen {
                         lm.player.getLives(),
                         lm.getTimeLeft(),
                         lm.player.getX(),
-                        lm.player.getY()
+                        lm.player.getY(),
+                        lm.player.isHasFire(),
+                        lm.player.isHasBomb(),
+                        lm.player.isHasLife()
                     );
 
                     // Guardamos en el archivo .sav
@@ -245,17 +248,14 @@ public class MainMenuScreen implements Screen {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         style.font = font;
         style.fontColor = Color.WHITE;
-        // style.overFontColor = Color.YELLOW; // ⚠️ Esto no funciona bien sin Skin, lo hacemos a mano
+        // style.overFontColor = Color.YELLOW;
 
         final TextButton button = new TextButton(text, style);
 
-        // Añadimos el efecto Hover: cambia a Amarillo al entrar, vuelve a Blanco al salir
         button.addListener(new ClickListener() {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 button.getLabel().setColor(Color.YELLOW);
-                // Opcional: Sonido de 'tic' al pasar el ratón
-                // Gdx.audio.newSound(Gdx.files.internal("sounds/tic.wav")).play();
             }
 
             @Override
