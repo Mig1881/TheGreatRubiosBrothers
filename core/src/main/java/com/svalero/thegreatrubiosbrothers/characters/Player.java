@@ -24,6 +24,11 @@ public class Player extends Character {
     public Vector2 velocity;
     private boolean onGround;
 
+    // --- NUEVO: ESTADO DE PODERES ---
+    private boolean hasFire;
+    private boolean hasBomb;
+    private boolean hasLife;
+
     // --- ANIMACIONES ---
     private Animation<TextureRegion> walkRight;
     private Animation<TextureRegion> walkLeft;
@@ -38,6 +43,11 @@ public class Player extends Character {
         this.score = 0;
         this.velocity = new Vector2(0, 0);
         this.onGround = false;
+
+        // --- NUEVO: Por defecto no tiene poderes
+        this.hasFire = false;
+        this.hasBomb = false;
+        this.hasLife = false;
 
         this.currentState = State.IDLE;
         this.previousState = State.IDLE;
@@ -66,8 +76,6 @@ public class Player extends Character {
         //FRAMES DE SALTO
         jumpRight = R.getRegion("Player1-right5");
         jumpLeft = R.getRegion("Player1-left5");
-
-
     }
 
     // Este método lo llamare desde el LogicManager en cada frame
@@ -136,11 +144,18 @@ public class Player extends Character {
     public boolean isDead() {
         return lives <= 0;
     }
+
     public void die() {
         if (currentState == State.DEAD) return; // Si ya está muerto, no lo vuelvo a matar
 
         currentState = State.DEAD;
         lives--;
+
+        // --- NUEVO: Al morir, pierde los poderes
+        this.hasFire = false;
+        this.hasBomb = false;
+        this.hasLife = false;
+
 
         //El salto de la muerte, Anulo movimiento lateral y le damos un empujón hacia arriba
         velocity.x = 0;

@@ -16,6 +16,7 @@ public class Constans {
     public static final String SOUND_DIR = "sounds/";
     public static final String MUSIC_DIR = "sounds/";
     public static final String TEXTURES_DIR = "textures/";
+    public static final String CHARACTERS_DIR = "characters/";
 
 
     public static final String TEXTURE_ATLAS = "rubiosBrothers.atlas";
