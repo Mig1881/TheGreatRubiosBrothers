@@ -16,11 +16,8 @@ public class RenderManager {
 
     private OrthographicCamera hudCamera;
     private BitmapFont font;
-
-    // --- NUEVO: Variable para saber el nivel actual ---
     private int currentLevel;
 
-    // --- MODIFICADO: Añadimos el currentLevel al constructor ---
     public RenderManager(LogicManager logicManager, SpriteBatch batch, int currentLevel) {
         this.logicManager = logicManager;
         this.batch = batch;
@@ -62,7 +59,6 @@ public class RenderManager {
         String scoreText = "RUBIOS\n" + String.format("%06d", logicManager.player.getScore() * 10);
         String livesText = "LIVES\n" + logicManager.player.getLives();
 
-        // --- MODIFICADO: Ahora pinta el nivel real ---
         String stageText = "STAGE\n1-" + currentLevel;
 
         String timeText = "TIME\n" + String.format("%03d", (int) Math.max(0, logicManager.getTimeLeft()));

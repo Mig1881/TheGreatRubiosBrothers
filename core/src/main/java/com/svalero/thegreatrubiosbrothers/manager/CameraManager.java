@@ -6,7 +6,7 @@ import com.svalero.thegreatrubiosbrothers.util.Constans;
 public class CameraManager {
 
     private OrthographicCamera camera;
-    private LogicManager logicManager; // Necesitamos saber dónde está el jugador
+    private LogicManager logicManager;
     private float mapWidth;
 
     public CameraManager(LogicManager logicManager) {
@@ -26,7 +26,7 @@ public class CameraManager {
     }
 
     public void handleCamera() {
-        // Obtengo la posición actual de David
+        // Obtengo la posición actual del juagador
         float playerX = logicManager.player.getX();
         float halfCameraWidth = camera.viewportWidth / 2f;
 

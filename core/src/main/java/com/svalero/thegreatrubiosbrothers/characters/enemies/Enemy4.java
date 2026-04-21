@@ -50,7 +50,7 @@ public class Enemy4 extends Enemy {
     @Override
     public void squash() {
         squashed = true;
-        velocity.x = 0; // Se para en seco
+        velocity.x = 0;
 
         // Selecciono el fotograma de "chafado" dependiendo de hacia dónde miraba
         if (this.currentFrame == walkLeftAnimation.getKeyFrame(stateTimer, true)) {
