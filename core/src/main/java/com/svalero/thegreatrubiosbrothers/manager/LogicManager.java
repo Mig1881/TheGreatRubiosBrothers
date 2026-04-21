@@ -17,12 +17,27 @@ import java.util.ArrayList;
 
 public class LogicManager {
 
+    //Mini-clase para gestionar la cuenta atrás de los puentes
+    private class CrumblingBlock {
+        int cellX;
+        int cellY;
+        float timer;
+
+        CrumblingBlock(int x, int y, float time) {
+            this.cellX = x;
+            this.cellY = y;
+            this.timer = time;
+        }
+    }
+
     public Player player;
     private LevelManager levelManager;
     public List<Enemy> enemies;
     public List<PowerUp> powerUps;
     public List<Fireball> fireballs;
     private List<String> emptyBlocks;
+
+    private List<CrumblingBlock> crumblingBlocks;
 
     private Rectangle viewPort;
 
@@ -37,6 +52,7 @@ public class LogicManager {
         powerUps = new ArrayList<>();
         fireballs = new ArrayList<>();
         emptyBlocks = new ArrayList<>();
+        crumblingBlocks = new ArrayList<>(); // Inicializamos la lista de puentes
         viewPort = new Rectangle();
         this.timeLeft = 100f;
     }
@@ -105,6 +121,20 @@ public class LogicManager {
             applyFireballCollisions(f);
             if (f.isToDestroy()) fireballs.remove(i);
         }
+
+        //GESTIÓN DEL TEMPORIZADOR DE LOS PUENTES
+        for (int i = crumblingBlocks.size() - 1; i >= 0; i--) {
+            CrumblingBlock cb = crumblingBlocks.get(i);
+            cb.timer -= dt;
+            //Se resta el tiempo que ha pasado en este frame
+            if (cb.timer <= 0) {
+                if (levelManager != null) {
+                    levelManager.getCollisionLayer().setCell(cb.cellX, cb.cellY, null);
+                }
+                crumblingBlocks.remove(i);
+            }
+        }
+        // ------------------------------------------------------
     }
 
     private void handleInput() {
@@ -176,6 +206,21 @@ public class LogicManager {
                     player.getRect().setY(player.getPosition().y);
                     player.velocity.y = 0;
                     player.setOnGround(true);
+
+                    // --- NUEVO: AÑADIR PUENTE AL TEMPORIZADOR ---
+                    if (cell.getTile().getProperties().containsKey("bridge")) {
+                        // Verificamos si ya estaba en la lista para no añadirlo 60 veces por segundo
+                        boolean alreadyCrumbling = false;
+                        for (CrumblingBlock cb : crumblingBlocks) {
+                            if (cb.cellX == x && cb.cellY == bottomY) {
+                                alreadyCrumbling = true;
+                                break;
+                            }
+                        }
+                        if (!alreadyCrumbling) {
+                            crumblingBlocks.add(new CrumblingBlock(x, bottomY, 0.4f));
+                        }
+                    }
                     break;
                 }
             }
@@ -485,6 +530,7 @@ public class LogicManager {
         if (levelManager != null) this.enemies = levelManager.loadEnemies();
         emptyBlocks.clear();
         fireballs.clear();
+        crumblingBlocks.clear(); // --- Limpiamos los puentes a punto de caer
     }
 
     public void loadState(com.svalero.thegreatrubiosbrothers.model.SaveState state) {
