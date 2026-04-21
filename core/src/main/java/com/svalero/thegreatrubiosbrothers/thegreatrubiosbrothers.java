@@ -11,8 +11,6 @@ public class thegreatrubiosbrothers extends Game {
     @Override
     public void create() {
         batch = new SpriteBatch();
-
-        // Lanzamos directamente la pantalla de carga
         this.setScreen(new LoadScreen(this));
     }
 

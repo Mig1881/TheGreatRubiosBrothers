@@ -46,9 +46,9 @@ public class ConfigurationScreen implements Screen {
         labelStyle.font = font;
 
         Label titleLabel = new Label("OPTIONS", labelStyle);
-        titleLabel.setColor(new Color(1f, 0.4f, 0f, 1f)); // Color Naranja retro
+        titleLabel.setColor(new Color(1f, 0.4f, 0f, 1f));
         titleLabel.setAlignment(Align.center);
-        titleLabel.setFontScale(3.0f); // Título aún más gigante
+        titleLabel.setFontScale(3.0f);
 
         String musicStatus;
         if (ConfigurationManager.isMusicOn()) {
@@ -83,9 +83,9 @@ public class ConfigurationScreen implements Screen {
                 int nextLevel;
 
                 if (currentLevel < 4) {
-                    nextLevel = currentLevel + 1; // Sumo 1 si estamos en el 1, 2 o 3
+                    nextLevel = currentLevel + 1;
                 } else {
-                    nextLevel = 1; // Si llegamos al 4, volvemos al 1
+                    nextLevel = 1;
                 }
 
                 ConfigurationManager.setStartLevel(nextLevel);

@@ -23,8 +23,6 @@ public class Player extends Character {
     private int score;
     public Vector2 velocity;
     private boolean onGround;
-
-    // --- NUEVO: ESTADO DE PODERES ---
     private boolean hasFire;
     private boolean hasBomb;
     private boolean hasLife;
@@ -43,8 +41,6 @@ public class Player extends Character {
         this.score = 0;
         this.velocity = new Vector2(0, 0);
         this.onGround = false;
-
-        // --- NUEVO: Por defecto no tiene poderes
         this.hasFire = false;
         this.hasBomb = false;
         this.hasLife = false;
@@ -151,7 +147,6 @@ public class Player extends Character {
         currentState = State.DEAD;
         lives--;
 
-        // --- NUEVO: Al morir, pierde los poderes
         this.hasFire = false;
         this.hasBomb = false;
         this.hasLife = false;

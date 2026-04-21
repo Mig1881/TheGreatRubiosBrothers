@@ -75,7 +75,7 @@ public class MainMenuScreen implements Screen {
         // TÍTULO DINÁMICO
         String titleText;
         if (pausedGameScreen == null) {
-            titleText = "THE GREAT\nRUBIOS BROTHERS"; // 🎨 MEJORA VISUAL: Título más épico
+            titleText = "THE GREAT\nRUBIOS BROTHERS";
         } else {
             titleText = "PAUSED";
         }
@@ -210,7 +210,6 @@ public class MainMenuScreen implements Screen {
             buttonTable.add(quitButton).pad(20).fillX().row();
         }
 
-        // Añadimos la tabla de botones a la principal
         mainTable.add(buttonTable);
 
 
@@ -248,7 +247,6 @@ public class MainMenuScreen implements Screen {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         style.font = font;
         style.fontColor = Color.WHITE;
-        // style.overFontColor = Color.YELLOW;
 
         final TextButton button = new TextButton(text, style);
 
@@ -269,7 +267,6 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        // 🎨 MEJORA VISUAL 4: Dibujamos la imagen de fondo ANTES que el escenario
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

@@ -29,7 +29,7 @@ import java.util.List;
 public class GameOverScreen implements Screen {
 
     private final thegreatrubiosbrothers game;
-    private final int finalScore; // La puntuación con la que ha muerto el jugador
+    private final int finalScore;
 
     private Stage stage;
     private BitmapFont font;
@@ -60,7 +60,7 @@ public class GameOverScreen implements Screen {
         mainTable.setFillParent(true);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.YELLOW);
-        //He hecho una copia directa de la version que salia en el Amiga 500
+        //He hecho una copia directa de la version que salia en el C64
         Label title = new Label("ALL TIME GREATEST", labelStyle);
         title.setFontScale(2.0f);
         mainTable.add(title).padBottom(30).row();

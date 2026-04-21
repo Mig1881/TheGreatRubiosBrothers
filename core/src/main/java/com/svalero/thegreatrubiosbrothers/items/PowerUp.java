@@ -25,10 +25,8 @@ public class PowerUp {
     private float spawnTargetY;
     // Si se cae por un barranco o lo recogemos
     private boolean toDestroy;
-
-    // --- NUEVO: Para físicas estilo retro
     private boolean onGround;
-    private float moveSpeed = 80f; // --- VELOCIDAD DOBLADA (antes era 40) ---
+    private float moveSpeed = 80f;
 
     //Constructor para Power-Ups ESTÁTICOS (Bomba, Vida)
     public PowerUp(TextureRegion texture, Vector2 startPos, Type type) {
@@ -106,11 +104,11 @@ public class PowerUp {
     public void landOnGround(float groundY) {
         position.y = groundY;
         velocity.y = 0;
-        onGround = true; // --- NUEVO: Le avisamos de que ha tocado suelo
+        onGround = true;
     }
 
     public void reverseVelocity() {
         velocity.x = -velocity.x; // Por si choca con una pared
-        moveSpeed = -moveSpeed;   // Invertimos también su velocidad base
+        moveSpeed = -moveSpeed;
     }
 }

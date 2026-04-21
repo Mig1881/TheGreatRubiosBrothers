@@ -17,7 +17,6 @@ public class Enemy1 extends Enemy {
         // Empieza patrullando hacia la izquierda
         this.velocity = new Vector2(-1f, 0);
 
-        // Preparamos su animación específica
         Array<TextureRegion> frames = new Array<>();
         frames.add(R.getRegion("enemy1-0"));
         frames.add(R.getRegion("enemy1-1"));
@@ -35,7 +34,6 @@ public class Enemy1 extends Enemy {
     public void squash() {
         squashed = true;
         velocity.x = 0; // Se para en seco
-        // Usamos el frame de chafado que me comentaste
         this.currentFrame = com.svalero.thegreatrubiosbrothers.manager.R.getRegion("enemy1-2");
     }
 }

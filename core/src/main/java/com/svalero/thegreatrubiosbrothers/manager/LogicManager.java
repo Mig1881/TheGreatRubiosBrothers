@@ -30,7 +30,7 @@ public class LogicManager {
         }
     }
 
-    // --- NUEVO: Mini-clase para guardar la copia de seguridad de los puentes
+    //Mini-clase para guardar la copia de seguridad de los puentes
     private class DestroyedBlock {
         int x;
         int y;
@@ -42,7 +42,7 @@ public class LogicManager {
             this.originalCell = cell;
         }
     }
-    // -------------------------------------------------------------------------
+
 
     public Player player;
     private LevelManager levelManager;
@@ -52,7 +52,6 @@ public class LogicManager {
     private List<String> emptyBlocks;
 
     private List<CrumblingBlock> crumblingBlocks;
-    // --- NUEVO: Lista donde guardaremos los puentes caídos
     private List<DestroyedBlock> destroyedBridges;
 
     private Rectangle viewPort;
@@ -68,8 +67,8 @@ public class LogicManager {
         powerUps = new ArrayList<>();
         fireballs = new ArrayList<>();
         emptyBlocks = new ArrayList<>();
-        crumblingBlocks = new ArrayList<>(); // Inicializamos la lista de puentes
-        destroyedBridges = new ArrayList<>(); // --- NUEVO: Inicializamos la memoria de puentes
+        crumblingBlocks = new ArrayList<>();
+        destroyedBridges = new ArrayList<>();
         viewPort = new Rectangle();
         this.timeLeft = 100f;
     }
@@ -158,7 +157,6 @@ public class LogicManager {
                 crumblingBlocks.remove(i);
             }
         }
-        // ------------------------------------------------------
     }
 
     private void handleInput() {

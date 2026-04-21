@@ -80,4 +80,6 @@ Agua Animada: Algoritmo dinámico que detecta baldosas de agua y las anima autom
 
 Donut Blocks (Puentes): Mecánica de puentes que se desmoronan tras 0.4s de contacto, con sistema de restauración automática tras la muerte del jugador para evitar bloqueos de nivel.
 
-Optimización (Culling): Implementación de visión de cámara para la "Bomba Inteligente", afectando solo a los enemigos visibles en pantalla.
+Optimización (Culling): Implementación de visión de cámara para la "Bomba Inteligente", afectando solo a los enemigos visibles en pantalla.  
+
+![Flujo del Ciclo de Vida del Juego](assets/flujo_ciclo_vida.png)

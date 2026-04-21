@@ -12,7 +12,7 @@ public abstract class Character {
 
     protected TextureRegion currentFrame;
     protected Vector2 position;
-    protected Rectangle rect; // La "hitbox" para calcular colisiones físicas
+    protected Rectangle rect;
 
     public Character(TextureRegion image, Vector2 position) {
         this.currentFrame = image;
@@ -27,7 +27,7 @@ public abstract class Character {
         this.rect = new Rectangle(position.x, position.y, image.getRegionWidth(), image.getRegionHeight());
     }
 
-    // Este método es crucial: siempre que movamos al personaje, su Hitbox debe moverse con él.
+    //siempre que se mueva rl personaje, su Hitbox debe moverse con él.
     public void move(float x, float y) {
         position.x += x;
         position.y += y;
