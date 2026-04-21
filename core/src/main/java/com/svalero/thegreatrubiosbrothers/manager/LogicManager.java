@@ -30,6 +30,20 @@ public class LogicManager {
         }
     }
 
+    // --- NUEVO: Mini-clase para guardar la copia de seguridad de los puentes
+    private class DestroyedBlock {
+        int x;
+        int y;
+        TiledMapTileLayer.Cell originalCell;
+
+        DestroyedBlock(int x, int y, TiledMapTileLayer.Cell cell) {
+            this.x = x;
+            this.y = y;
+            this.originalCell = cell;
+        }
+    }
+    // -------------------------------------------------------------------------
+
     public Player player;
     private LevelManager levelManager;
     public List<Enemy> enemies;
@@ -38,6 +52,8 @@ public class LogicManager {
     private List<String> emptyBlocks;
 
     private List<CrumblingBlock> crumblingBlocks;
+    // --- NUEVO: Lista donde guardaremos los puentes caídos
+    private List<DestroyedBlock> destroyedBridges;
 
     private Rectangle viewPort;
 
@@ -53,6 +69,7 @@ public class LogicManager {
         fireballs = new ArrayList<>();
         emptyBlocks = new ArrayList<>();
         crumblingBlocks = new ArrayList<>(); // Inicializamos la lista de puentes
+        destroyedBridges = new ArrayList<>(); // --- NUEVO: Inicializamos la memoria de puentes
         viewPort = new Rectangle();
         this.timeLeft = 100f;
     }
@@ -129,7 +146,14 @@ public class LogicManager {
             //Se resta el tiempo que ha pasado en este frame
             if (cb.timer <= 0) {
                 if (levelManager != null) {
-                    levelManager.getCollisionLayer().setCell(cb.cellX, cb.cellY, null);
+                    //Guardo la baldosa antes de borrarla, para que si se reinicia el nivel cuando matan al player
+                    //este de nuevo hecho el puente
+                    TiledMapTileLayer layer = levelManager.getCollisionLayer();
+                    TiledMapTileLayer.Cell cellToDestroy = layer.getCell(cb.cellX, cb.cellY);
+                    if (cellToDestroy != null) {
+                        destroyedBridges.add(new DestroyedBlock(cb.cellX, cb.cellY, cellToDestroy));
+                    }
+                    layer.setCell(cb.cellX, cb.cellY, null);
                 }
                 crumblingBlocks.remove(i);
             }
@@ -207,9 +231,8 @@ public class LogicManager {
                     player.velocity.y = 0;
                     player.setOnGround(true);
 
-                    // --- NUEVO: AÑADIR PUENTE AL TEMPORIZADOR ---
                     if (cell.getTile().getProperties().containsKey("bridge")) {
-                        // Verificamos si ya estaba en la lista para no añadirlo 60 veces por segundo
+                        //Se verifica si ya estaba en la lista para no añadirlo el puente 60 veces por segundo
                         boolean alreadyCrumbling = false;
                         for (CrumblingBlock cb : crumblingBlocks) {
                             if (cb.cellX == x && cb.cellY == bottomY) {
@@ -527,10 +550,20 @@ public class LogicManager {
         player.getRect().setPosition(50, 150);
         timeLeft = 100f;
         deathTimer = 0;
-        if (levelManager != null) this.enemies = levelManager.loadEnemies();
+
+        if (levelManager != null) {
+            this.enemies = levelManager.loadEnemies();
+            // Se Restauran los puentes caídos al mapa original
+            TiledMapTileLayer layer = levelManager.getCollisionLayer();
+            for (DestroyedBlock db : destroyedBridges) {
+                layer.setCell(db.x, db.y, db.originalCell);
+            }
+        }
+
         emptyBlocks.clear();
         fireballs.clear();
-        crumblingBlocks.clear(); // --- Limpiamos los puentes a punto de caer
+        crumblingBlocks.clear();
+        destroyedBridges.clear();
     }
 
     public void loadState(com.svalero.thegreatrubiosbrothers.model.SaveState state) {
