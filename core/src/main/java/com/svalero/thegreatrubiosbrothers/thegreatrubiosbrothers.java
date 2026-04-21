@@ -2,10 +2,9 @@ package com.svalero.thegreatrubiosbrothers;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.svalero.thegreatrubiosbrothers.screen.MainMenuScreen;
+import com.svalero.thegreatrubiosbrothers.screen.LoadScreen;
 
 public class thegreatrubiosbrothers extends Game {
-
 
     public SpriteBatch batch;
 
@@ -13,12 +12,8 @@ public class thegreatrubiosbrothers extends Game {
     public void create() {
         batch = new SpriteBatch();
 
-        // Nota, ya cargare cuando haga la splash screeen los recursos
-        // de momento los cargo aqui en memoria, TODO cambiar esto mas adelante
-        com.svalero.thegreatrubiosbrothers.manager.R.loadAllResources();
-        com.svalero.thegreatrubiosbrothers.manager.R.assets.finishLoading();
-
-        this.setScreen(new MainMenuScreen(this));
+        // Lanzamos directamente la pantalla de carga
+        this.setScreen(new LoadScreen(this));
     }
 
     @Override
@@ -28,8 +23,7 @@ public class thegreatrubiosbrothers extends Game {
 
     @Override
     public void dispose() {
-        if (batch != null) {
-            batch.dispose();
-        }
+        if (batch != null) batch.dispose();
     }
 }
+
