@@ -216,10 +216,13 @@ public class MainMenuScreen implements Screen {
         // TABLA DE INSTRUCCIONES
 
         String text = "CONTROLS\n\n" +
-            "LEFT / RIGHT ARROWS : Move\n" +
-            "SPACE : Jump\n\n" +
+            "LEFT / RIGHT / ARROWS : Move\n\n" +
+            "UP ARROW : JUMP\n\n" +
+            "SPACE : FIRE\n\n" +
             "Jump on enemies to squash them.\n" +
-            "Collect diamonds to get points!";
+            "Collect diamonds to get points\n" +
+            "Collect power-ups to shoot enemies and gain extra lives!";
+
 
         Label instrLabel = new Label(text, labelStyle);
         instrLabel.setAlignment(Align.center);
