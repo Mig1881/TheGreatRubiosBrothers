@@ -18,8 +18,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.svalero.thegreatrubiosbrothers.thegreatrubiosbrothers;
 import com.svalero.thegreatrubiosbrothers.manager.ConfigurationManager;
-
-// --- NUEVO --- Imports para el guardado/carga de partidas
 import com.svalero.thegreatrubiosbrothers.manager.SaveManager;
 import com.svalero.thegreatrubiosbrothers.model.SaveState;
 

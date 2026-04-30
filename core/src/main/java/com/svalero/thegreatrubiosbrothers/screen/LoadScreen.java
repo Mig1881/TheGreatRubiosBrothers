@@ -95,7 +95,7 @@ public class LoadScreen implements Screen {
         float textX = (screenWidth - layout.width) / 2f;
         float textY = screenHeight * 0.25f;
 
-        font.setColor(Color.BLACK);
+
         font.draw(game.batch, layout, textX, textY);
         font.setColor(Color.WHITE);
 
