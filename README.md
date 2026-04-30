@@ -53,7 +53,7 @@ El desarrollo ha cumplido estrictamente con estos 12 puntos de requerimientos t�
 
 🖥️ Menús Completos: Menú principal, instrucciones y configuración. Rejugabilidad total sin salir de la app.
 
-🎵 Audio y Animación: Animaciones fluidas en todos los caracteres y banda sonora original integrada (Intro y Gameplay).
+🎵 Audio y Animación: Animaciones fluidas en todos los caracteres y banda sonora original integrada (Carga, Intro y Gameplay).
 
 👾 IA de Enemigos: Sistema de 4 NPCs (enemigos) con comportamientos y patrones de movimiento.
 
@@ -74,7 +74,7 @@ El desarrollo ha cumplido estrictamente con estos 12 puntos de requerimientos t�
 
 ## 🎨 Detalles Especiales (Nostalgia y Pulido)
 
-LoadScreen (C64): Pantalla de carga asíncrona que emula el ritual del Commodore 64 con el mensaje "PRESS PLAY ON TAPE" y música de introducción.
+LoadScreen (C64): Pantalla de carga asíncrona que emula el ritual del Commodore 64 con el mensaje "PRESS PLAY ON TAPE" y música de introducción, recreando la clásica (y larga) espera hasta que el juego esté por fin listo.  
 
 Agua Animada: Algoritmo dinámico que detecta baldosas de agua y las anima automáticamente mediante AnimatedTiledMapTile.
 
