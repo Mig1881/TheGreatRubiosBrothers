@@ -26,7 +26,7 @@ public class Fireball {
         if (toDestroy) return;
 
         // Tiene gravedad, así que irá cayendo en picado poco a poco
-        velocity.y -= Constans.GRAVITY * dt;
+        //velocity.y -= Constans.GRAVITY * dt;
 
         position.x += velocity.x * dt;
         position.y += velocity.y * dt;

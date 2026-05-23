@@ -15,7 +15,7 @@ public class Enemy2 extends Enemy {
         super(R.getRegion("enemy2-1"), position);
 
         // Empieza patrullando hacia la izquierda (igual que el 1)
-        this.velocity = new Vector2(-1f, 0);
+        this.velocity = new Vector2(-com.svalero.thegreatrubiosbrothers.util.Constans.ENEMY_SPEED, 0);
 
         // Animación de caminar con 3 frames
         Array<TextureRegion> frames = new Array<>();

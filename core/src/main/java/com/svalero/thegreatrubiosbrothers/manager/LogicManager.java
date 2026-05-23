@@ -191,7 +191,7 @@ public class LogicManager {
 
     private void applyPhysics(float dt) {
         player.velocity.y -= Constans.GRAVITY * dt;
-        player.move(0, player.velocity.y);
+        player.move(0, player.velocity.y * dt);
         player.setOnGround(false);
 
         if (player.getCurrentState() != Player.State.DEAD) {
@@ -200,7 +200,7 @@ public class LogicManager {
             }
         }
 
-        player.move(player.velocity.x, 0);
+        player.move(player.velocity.x * dt, 0);
         if (player.getCurrentState() != Player.State.DEAD) {
             if (levelManager != null) {
                 checkHorizontalCollisions();
@@ -383,9 +383,9 @@ public class LogicManager {
 
     private void applyEnemyPhysics(Enemy enemy, float dt) {
         if (!enemy.isFlying()) enemy.velocity.y -= Constans.GRAVITY * dt;
-        enemy.move(0, enemy.velocity.y);
+        enemy.move(0, enemy.velocity.y * dt);
         if (levelManager != null) checkEnemyVerticalCollisions(enemy);
-        enemy.move(enemy.velocity.x, 0);
+        enemy.move(enemy.velocity.x *dt , 0);
         if (levelManager != null && !enemy.isFlying()) checkEnemyHorizontalCollisions(enemy);
     }
 

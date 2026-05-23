@@ -69,9 +69,7 @@ public class PowerUp {
             }
         } else {
             if (!onGround) {
-                // Cancelamos velocidad X para que caiga recto (a plomo)
-                // Y aplicamos una gravedad MUCHO más fuerte (x6 o x8)
-                velocity.y -= Constans.GRAVITY * 8 * dt;
+                velocity.y -= Constans.GRAVITY * dt;
                 position.y += velocity.y * dt;
             } else {
                 // En el suelo se mueve a la velocidad horizontal doblada

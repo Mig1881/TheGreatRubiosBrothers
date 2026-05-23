@@ -16,7 +16,7 @@ public class Enemy4 extends Enemy {
         super(R.getRegion("enemy4-0"), position);
 
         // Empieza patrullando hacia la izquierda a velocidad normal
-        this.velocity = new Vector2(-1f, 0);
+        this.velocity = new Vector2(-com.svalero.thegreatrubiosbrothers.util.Constans.ENEMY_SPEED, 0);
 
         // --- ANIMACIÓN ANDAR IZQUIERDA ---
         Array<TextureRegion> framesLeft = new Array<>();

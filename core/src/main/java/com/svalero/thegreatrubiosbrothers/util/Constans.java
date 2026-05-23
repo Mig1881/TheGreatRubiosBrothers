@@ -8,9 +8,11 @@ public class Constans {
     public static final int SCREEN_HEIGHT = 768;
 
     // Físicas del juego
-    public static final float PLAYER_SPEED = 3f;
-    public static final float GRAVITY = 20f;
-    public static final float JUMPING_SPEED = 7f;
+    public static final float PLAYER_SPEED = 180f;
+    public static final float ENEMY_SPEED = 60f;
+    public static final float ENEMY_SPEED_FLY = 90f;
+    public static final float GRAVITY = 1200f;
+    public static final float JUMPING_SPEED = 420f;
 
     // Rutas base para los Assets
     public static final String SOUND_DIR = "sounds/";

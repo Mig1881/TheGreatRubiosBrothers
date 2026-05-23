@@ -15,7 +15,7 @@ public class Enemy3 extends Enemy {
         super(R.getRegion("enemy3-1"), position);
 
         // Las abejas pueden volar un pelín más rápido (-1.5f en vez de -1f)
-        this.velocity = new Vector2(-1.5f, 0);
+        this.velocity = new Vector2(-com.svalero.thegreatrubiosbrothers.util.Constans.ENEMY_SPEED_FLY, 0);
 
         // Animación de aleteo (3 frames)
         Array<TextureRegion> frames = new Array<>();
